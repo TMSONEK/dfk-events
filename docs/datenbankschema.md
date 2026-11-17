@@ -189,7 +189,7 @@ Jedes Event gehört **genau einer** veranstaltenden Einheit (Veranstalter).
 | `dfk` | der DFK selbst (Bundesebene) |
 | `regionalgruppe` | RG Köln, RG Süd … |
 | `netzwerk` | weibliche FK, Young Professionals, Netzwerk 60+ … |
-| `kooperation` | Kooperationspartner, IfKom Bezirk Köln … (Vorschlag) |
+| `kooperation` | Kooperationspartner, IfKom Bezirk Köln … |
 
 Vorschlag für den Aufbau von `T_Veranstalter` in der MV (Entscheidung liegt beim MV-Projekt):
 
@@ -204,7 +204,7 @@ Vorschlag für den Aufbau von `T_Veranstalter` in der MV (Entscheidung liegt bei
 
 Für die Bereinigung der Altdaten zusätzlich eine Zuordnung alte Schreibweise → `InterneID` (z. B. `T_Veranstalter_Alias`), damit `T_Termine.Veranstalter` und die Migration dieselbe Zuordnung nutzen.
 
-**Regel:** Online-Veranstaltungen gehören **immer dem DFK**, weil sie räumlich nicht begrenzt sind. Der `EventService` setzt das beim Speichern automatisch und lässt keine andere Einheit zu.
+**Regel:** Reine Online-Veranstaltungen (`format = online`) gehören **immer dem DFK**, weil sie räumlich nicht begrenzt sind. Der `EventService` setzt das beim Speichern automatisch und lässt keine andere Einheit zu.
 
 Keine eigene Tabelle: WordPress-Taxonomie (`wp_terms` / `wp_term_taxonomy` / `wp_termmeta`). Dadurch gibt es Archivseiten, Filter und Rank-Math-Unterstützung ohne Zusatzaufwand.
 
@@ -215,7 +215,9 @@ Keine eigene Tabelle: WordPress-Taxonomie (`wp_terms` / `wp_term_taxonomy` / `wp
 | `active` | 0/1 | inaktive Einheiten sind für neue Events nicht wählbar, bleiben aber an alten Events erhalten |
 
 - Name und Slug des Terms sind frei änderbar; maßgeblich für MV und Auswertungen ist ausschließlich `mv_veranstalter_id`.
-- Anlage: Import der Liste aus `T_Veranstalter` (offen: einmalig per CSV und dann manuell, oder automatischer Abgleich – siehe Abschnitt 6).
+- Anlage: **einmaliger CSV-Import** aus `T_Veranstalter`, danach manuelle Pflege im WP-Admin ✅.
+- Typ `kooperation` für Kooperationspartner, IfKom usw. ✅
+- **Hybride Events** (vor Ort + online, sehr selten) gehören dem Veranstalter vor Ort, in der Regel der Regionalgruppe ✅. Nur reine Online-Events werden automatisch dem DFK zugeordnet.
 - Filter „Regionalgruppe“ in der Übersicht wird zum Filter „Veranstalter“. DFK-/Online-Events werden – wie beim Umkreisfilter – unabhängig vom gewählten Regionalfilter angezeigt (Vorschlag).
 **Befund aus `dbo.T_Termine.Veranstalter` (MV, 17.11.2026, nur diese Spalte gelesen):**
 
@@ -293,8 +295,5 @@ Zusatzfelder werden als eigene View `wp_dfk_mv_field_values_v1` (Teilnehmer-ID, 
 
 ## 6. Noch offen und schema-relevant
 
-- **Abgleich `T_Veranstalter` → WordPress:** einmalig per CSV + manuelle Pflege im WP-Admin, oder automatisch (die MV schreibt in eine Import-Tabelle, für die sie ein eigenes Schreibrecht bekommt)? Vorschlag: zuerst CSV, Veranstalter ändern sich selten.
-- **Typ `kooperation`** für Kooperationspartner und IfKom – passt das?
-- **Hybride Events** (vor Ort + online): gehören sie der Einheit vor Ort oder automatisch dem DFK?
 - **E-F9 Warteliste** – das Schema unterstützt Status `waitlisted` und Reihenfolge; die Regeln selbst sind offen.
 - **E-F2 Wiederkehrende Events** – nicht abgebildet; „Event duplizieren“ braucht keine Schemaänderung.

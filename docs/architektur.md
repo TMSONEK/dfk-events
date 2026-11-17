@@ -15,7 +15,7 @@ Stand: 17.11.2026 · Status: **Entwurf, teilweise entschieden – Rest wartet au
 | E-F24 | Zusatzfelder können als „sensibel“ markiert werden (eingeschränkte Sichtbarkeit, verschlüsselt, nicht in API/Mails/Logs, automatische Löschung). | – |
 | E-F15 | Personenbezogene Daten werden nach Übernahme ins CRM gelöscht, normalerweise direkt nach der Veranstaltung, spätestens 30 Tage danach. | [0005](adr/0005-datenlebenszyklus-crm.md) |
 | E-F26/27 | Schnittstelle zur MV: versionierte DB-Views mit eingeschränktem MySQL-Benutzer; MV bestätigt Sync per Zeitstempel, danach Bereinigung. | [mv-schnittstelle.md](mv-schnittstelle.md) |
-| E-F5 | Jedes Event gehört genau einem Veranstalter: DFK, Regionalgruppe, Netzwerk (oder Kooperation). Taxonomie `dfk_unit`, Kennung `T_Veranstalter.InterneID` der MV. Online-Events gehören immer dem DFK. | [datenbankschema.md](datenbankschema.md) |
+| E-F5 | Jedes Event gehört genau einem Veranstalter: DFK, Regionalgruppe, Netzwerk (oder Kooperation). Taxonomie `dfk_unit`, Kennung `T_Veranstalter.InterneID` der MV, einmaliger CSV-Import + manuelle Pflege. Reine Online-Events gehören immer dem DFK, hybride dem Veranstalter vor Ort. | [datenbankschema.md](datenbankschema.md) |
 | E-F6 | Eventstatus: findet statt / abgesagt / verschoben. | – |
 | E-F7 | Kein Freitext mehr: Veranstalter = Auswahl aus der Liste `T_Veranstalter` der MV, Kennung `InterneID`. Genau einer je Event (Pflicht). | [datenbankschema.md](datenbankschema.md) |
 | Rahmen | Hosting: WordPress, MySQL ist nach Bedarf wählbar. Daher dürfen InnoDB und eine aktuelle MySQL-Version vorausgesetzt werden. | – |
