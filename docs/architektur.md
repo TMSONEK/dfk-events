@@ -15,9 +15,9 @@ Stand: 17.11.2026 · Status: **Entwurf, teilweise entschieden – Rest wartet au
 | E-F24 | Zusatzfelder können als „sensibel“ markiert werden (eingeschränkte Sichtbarkeit, verschlüsselt, nicht in API/Mails/Logs, automatische Löschung). | – |
 | E-F15 | Personenbezogene Daten werden nach Übernahme ins CRM gelöscht, normalerweise direkt nach der Veranstaltung, spätestens 30 Tage danach. | [0005](adr/0005-datenlebenszyklus-crm.md) |
 | E-F26/27 | Schnittstelle zur MV: versionierte DB-Views mit eingeschränktem MySQL-Benutzer; MV bestätigt Sync per Zeitstempel, danach Bereinigung. | [mv-schnittstelle.md](mv-schnittstelle.md) |
-| E-F5 | Jedes Event gehört genau einer veranstaltenden Einheit: DFK, Regionalgruppe oder Netzwerk (Taxonomie `dfk_unit`, Kennung aus der MV). Online-Events gehören immer dem DFK. | [datenbankschema.md](datenbankschema.md) |
+| E-F5 | Jedes Event gehört genau einem Veranstalter: DFK, Regionalgruppe, Netzwerk (oder Kooperation). Taxonomie `dfk_unit`, Kennung `T_Veranstalter.InterneID` der MV. Online-Events gehören immer dem DFK. | [datenbankschema.md](datenbankschema.md) |
 | E-F6 | Eventstatus: findet statt / abgesagt / verschoben. | – |
-| E-F7 | Veranstalter als Freitext; jedes Event hat genau einen Veranstalter (Pflicht). | – |
+| E-F7 | Kein Freitext mehr: Veranstalter = Auswahl aus der Liste `T_Veranstalter` der MV, Kennung `InterneID`. Genau einer je Event (Pflicht). | [datenbankschema.md](datenbankschema.md) |
 | Rahmen | Hosting: WordPress, MySQL ist nach Bedarf wählbar. Daher dürfen InnoDB und eine aktuelle MySQL-Version vorausgesetzt werden. | – |
 
 Aus E-F3 ergeben sich die neuen offenen Punkte E-F17 bis E-F20 (Abschnitt 5.1).
@@ -297,7 +297,7 @@ Jede Entscheidung erhält eine ID. Freigegebene Entscheidungen werden als eigene
 | E-F4 | Wie wird die Teilnehmerart „Mitglied“ festgestellt, wenn ohne Login gebucht wird? | – | ✅ **Entschieden:** Je Teilnehmer ein Dropdown „Mitglied / Nichtmitglied“, Selbstauskunft ohne Prüfung, keine Mitgliedsnummer (ADR 0003) |
 | E-F5 | Regionalgruppe – wie abbilden? | – | ✅ **Entschieden:** Taxonomie `dfk_unit` mit Typ DFK / Regionalgruppe / Netzwerk, genau eine je Event; Kennung aus der MV (`RegionalgruppeID` bzw. Netzwerk-Kürzel). Online-Events → immer DFK |
 | E-F6 | Veranstaltungsstatus | – | ✅ **Entschieden:** findet statt / abgesagt / verschoben; „ausgebucht“ und „Anmeldung geschlossen“ werden berechnet |
-| E-F7 | Veranstalter – wie abbilden? | – | ✅ **Entschieden:** Freitext |
+| E-F7 | Veranstalter – wie abbilden? | – | ✅ **Entschieden:** Auswahl aus `T_Veranstalter` (MV), Kennung `InterneID`; ersetzt den Freitext |
 | E-F8 | Kartenansicht (W4) | Kacheln / Landkarte / beides | Kacheln in V1; Landkarte später, da Kartendienst nötig |
 | E-F9 | Wartelisten-Regeln | automatisch / manuell nachrücken; Gruppen ganz oder teilweise; Reservierungsfrist | Vorschlag folgt als eigenes Papier, sobald E-F3 und E-F11 geklärt sind |
 | E-F10 | Kontingente je Teilnehmerart? | eine Gesamtkapazität / getrennte Kontingente Mitglieder/Gäste | Gesamtkapazität in V1, Datenmodell so anlegen, dass Kontingente nachrüstbar sind |

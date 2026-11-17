@@ -53,7 +53,6 @@ Titel, Beschreibung, Bild, Veröffentlichungsstatus und Permalink liegen im Beit
 | `format` | VARCHAR(10) NOT NULL DEFAULT 'onsite' | `onsite`, `online`, `hybrid` |
 | `location_id` | BIGINT UNSIGNED NULL | FK → locations; NULL bei reinen Online-Events |
 | `online_url` | VARCHAR(2048) NULL | nur für bestätigte Teilnehmer sichtbar (E-F13) |
-| `organizer` | VARCHAR(255) NOT NULL | Freitext (E-F7 ✅); jedes Event hat **genau einen** Veranstalter (Pflicht) |
 | `registration_enabled` | TINYINT(1) NOT NULL DEFAULT 1 | |
 | `registration_opens_at` | DATETIME NULL | UTC, NULL = sofort |
 | `registration_closes_at` | DATETIME NULL | UTC, Anmeldeschluss |
@@ -181,13 +180,29 @@ Die MV erhält auf diese Tabelle **nur** `INSERT`. Bereinigt werden Events, dere
 
 ### 3.8 Veranstaltende Einheit – Taxonomie `dfk_unit` (E-F5 ✅)
 
-Jedes Event gehört **genau einer** veranstaltenden Einheit. Das kann sein:
+Jedes Event gehört **genau einer** veranstaltenden Einheit (Veranstalter).
 
-| Typ | Beispiel | Kennung aus der MV |
-|---|---|---|
-| `dfk` | der DFK selbst (Bundesebene) | – (genau ein Eintrag) |
-| `regionalgruppe` | Regionalgruppe München | `RegionalgruppeID` aus `dbo.T_Regionalgruppen` |
-| `netzwerk` | Netzwerk FN, YP, 60plus … | Netzwerk-Kürzel der MV |
+**Führende Liste ist die neue MV-Tabelle `T_Veranstalter`** (Entscheidung Captain, 17.11.2026). Jeder Veranstalter hat dort eine **interne ID** als Sekundärschlüssel; diese ID ist die Kennung, über die DFK Events und MV sich verständigen – für alle Typen gleich.
+
+| Typ | Beispiel |
+|---|---|
+| `dfk` | der DFK selbst (Bundesebene) |
+| `regionalgruppe` | RG Köln, RG Süd … |
+| `netzwerk` | weibliche FK, Young Professionals, Netzwerk 60+ … |
+| `kooperation` | Kooperationspartner, IfKom Bezirk Köln … (Vorschlag) |
+
+Vorschlag für den Aufbau von `T_Veranstalter` in der MV (Entscheidung liegt beim MV-Projekt):
+
+| Spalte | Bemerkung |
+|---|---|
+| `VeranstalterID` | Primärschlüssel (intern MV) |
+| `InterneID` | Sekundärschlüssel, eindeutig, **unveränderlich** – Kennung für DFK Events |
+| `Name` | Anzeigename |
+| `Typ` | DFK / Regionalgruppe / Netzwerk / Kooperation |
+| `RegionalgruppeID` | nur bei Typ Regionalgruppe, Verweis auf `T_Regionalgruppen` |
+| `Aktiv` | |
+
+Für die Bereinigung der Altdaten zusätzlich eine Zuordnung alte Schreibweise → `InterneID` (z. B. `T_Veranstalter_Alias`), damit `T_Termine.Veranstalter` und die Migration dieselbe Zuordnung nutzen.
 
 **Regel:** Online-Veranstaltungen gehören **immer dem DFK**, weil sie räumlich nicht begrenzt sind. Der `EventService` setzt das beim Speichern automatisch und lässt keine andere Einheit zu.
 
@@ -195,12 +210,12 @@ Keine eigene Tabelle: WordPress-Taxonomie (`wp_terms` / `wp_term_taxonomy` / `wp
 
 | Term-Meta | Typ | Bemerkung |
 |---|---|---|
-| `unit_type` | `dfk` / `regionalgruppe` / `netzwerk` | Pflicht |
-| `mv_key` | Text, **Pflicht außer bei `dfk`**, eindeutig je Typ | `RegionalgruppeID` bzw. Netzwerk-Kürzel; Eindeutigkeit prüft der Service |
+| `mv_veranstalter_id` | **Pflicht, eindeutig** | = `T_Veranstalter.InterneID` der MV; Eindeutigkeit prüft der Service |
+| `unit_type` | `dfk` / `regionalgruppe` / `netzwerk` / `kooperation` | Pflicht; Kopie aus der MV, nötig für die Regel „online → DFK“ und den Filter |
 | `active` | 0/1 | inaktive Einheiten sind für neue Events nicht wählbar, bleiben aber an alten Events erhalten |
 
-- Name und Slug des Terms sind frei änderbar; maßgeblich für MV und Auswertungen sind ausschließlich `unit_type` + `mv_key`.
-- Anlage: einmaliger Import der Regionalgruppen aus der MV, Netzwerke und DFK manuell; danach Pflege im WP-Admin.
+- Name und Slug des Terms sind frei änderbar; maßgeblich für MV und Auswertungen ist ausschließlich `mv_veranstalter_id`.
+- Anlage: Import der Liste aus `T_Veranstalter` (offen: einmalig per CSV und dann manuell, oder automatischer Abgleich – siehe Abschnitt 6).
 - Filter „Regionalgruppe“ in der Übersicht wird zum Filter „Veranstalter“. DFK-/Online-Events werden – wie beim Umkreisfilter – unabhängig vom gewählten Regionalfilter angezeigt (Vorschlag).
 **Befund aus `dbo.T_Termine.Veranstalter` (MV, 17.11.2026, nur diese Spalte gelesen):**
 
@@ -229,7 +244,7 @@ Die MV liest ausschließlich diese Views. Spaltennamen orientieren sich an `T_Te
 |---|---|
 | `TerminID` | `events.post_id` |
 | `Titel` | `wp_posts.post_title` |
-| `Veranstalter` | `events.organizer` |
+| `Veranstalter` | Name des Veranstalter-Terms (`dfk_unit`) |
 | `Startdatum`, `Enddatum` | `starts_at_local`, `ends_at_local` |
 | `Anmeldeschluss` | `registration_closes_at` in Ortszeit |
 | `Ort`, `OrtLocation` | `locations.name`, `locations.city` |
@@ -257,9 +272,9 @@ Zusätzliche Spalten in **`wp_dfk_mv_events_v1`** für die veranstaltende Einhei
 
 | Spalte | Herkunft |
 |---|---|
-| `EinheitTyp` | Term-Meta `unit_type` (`dfk`, `regionalgruppe`, `netzwerk`) |
-| `EinheitKennung` | Term-Meta `mv_key` (`RegionalgruppeID` bzw. Netzwerk-Kürzel, leer bei DFK) |
-| `EinheitName` | Term-Name |
+| `VeranstalterInterneID` | Term-Meta `mv_veranstalter_id` = `T_Veranstalter.InterneID` |
+
+Die Spalte `Veranstalter` (Name) bleibt zur Kompatibilität mit `T_Termine` erhalten, gefüllt mit dem Term-Namen statt Freitext.
 
 Da jedes Event genau eine Einheit hat, ist keine eigene Zuordnungs-View nötig.
 
@@ -278,7 +293,8 @@ Zusatzfelder werden als eigene View `wp_dfk_mv_field_values_v1` (Teilnehmer-ID, 
 
 ## 6. Noch offen und schema-relevant
 
-- **Veranstalter-Freitext (`organizer`)**: Vorschlag – die Einheit ersetzt den Freitext (Befund in 3.8). Wie werden **Kooperationspartner** und **IfKom Bezirk Köln** abgebildet: als eigener Einheitstyp `kooperation` oder als DFK-/RG-Event mit optionalem Freitext „Partner“?
+- **Abgleich `T_Veranstalter` → WordPress:** einmalig per CSV + manuelle Pflege im WP-Admin, oder automatisch (die MV schreibt in eine Import-Tabelle, für die sie ein eigenes Schreibrecht bekommt)? Vorschlag: zuerst CSV, Veranstalter ändern sich selten.
+- **Typ `kooperation`** für Kooperationspartner und IfKom – passt das?
 - **Hybride Events** (vor Ort + online): gehören sie der Einheit vor Ort oder automatisch dem DFK?
 - **E-F9 Warteliste** – das Schema unterstützt Status `waitlisted` und Reihenfolge; die Regeln selbst sind offen.
 - **E-F2 Wiederkehrende Events** – nicht abgebildet; „Event duplizieren“ braucht keine Schemaänderung.
