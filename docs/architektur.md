@@ -15,6 +15,9 @@ Stand: 17.11.2026 · Status: **Entwurf, teilweise entschieden – Rest wartet au
 | E-F24 | Zusatzfelder können als „sensibel“ markiert werden (eingeschränkte Sichtbarkeit, verschlüsselt, nicht in API/Mails/Logs, automatische Löschung). | – |
 | E-F15 | Personenbezogene Daten werden nach Übernahme ins CRM gelöscht, normalerweise direkt nach der Veranstaltung, spätestens 30 Tage danach. | [0005](adr/0005-datenlebenszyklus-crm.md) |
 | E-F26/27 | Schnittstelle zur MV: versionierte DB-Views mit eingeschränktem MySQL-Benutzer; MV bestätigt Sync per Zeitstempel, danach Bereinigung. | [mv-schnittstelle.md](mv-schnittstelle.md) |
+| E-F5 | Regionalgruppen als Taxonomie, Kennung = `RegionalgruppeID` der MV. | [datenbankschema.md](datenbankschema.md) |
+| E-F6 | Eventstatus: findet statt / abgesagt / verschoben. | – |
+| E-F7 | Veranstalter als Freitext. | – |
 | Rahmen | Hosting: WordPress, MySQL ist nach Bedarf wählbar. Daher dürfen InnoDB und eine aktuelle MySQL-Version vorausgesetzt werden. | – |
 
 Aus E-F3 ergeben sich die neuen offenen Punkte E-F17 bis E-F20 (Abschnitt 5.1).
@@ -291,9 +294,9 @@ Jede Entscheidung erhält eine ID. Freigegebene Entscheidungen werden als eigene
 | E-F2 | Wiederkehrende Veranstaltungen? | nein / einfache Kopierfunktion / echte Serien | Kopierfunktion („Event duplizieren“) in V1, echte Serien später |
 | E-F3 | Dürfen Gäste ohne Login buchen? | – | ✅ **Entschieden:** Buchen ist immer ohne Login möglich, ein Login füllt nur Daten vor |
 | E-F4 | Wie wird die Teilnehmerart „Mitglied“ festgestellt, wenn ohne Login gebucht wird? | – | ✅ **Entschieden:** Je Teilnehmer ein Dropdown „Mitglied / Nichtmitglied“, Selbstauskunft ohne Prüfung, keine Mitgliedsnummer (ADR 0003) |
-| E-F5 | Regionalgruppe – wie abbilden? | Taxonomie / eigene Tabelle / Feld | Taxonomie `dfk_region` – WordPress-Archive, Rank Math und Filter funktionieren ohne Zusatzaufwand |
-| E-F6 | Veranstaltungsstatus | findet statt / abgesagt / verschoben / … | Festen, kleinen Satz definieren; „ausgebucht“ und „Anmeldung geschlossen“ berechnen |
-| E-F7 | Veranstalter – wie abbilden? | Freitext / WP-Benutzer / eigene Entität | Abhängig von E-F5; oft ist der Veranstalter die Regionalgruppe selbst |
+| E-F5 | Regionalgruppe – wie abbilden? | – | ✅ **Entschieden:** Taxonomie `dfk_region`; jede Regionalgruppe trägt **zwingend die `RegionalgruppeID` der MV** (`dbo.T_Regionalgruppen`) als Term-Meta |
+| E-F6 | Veranstaltungsstatus | – | ✅ **Entschieden:** findet statt / abgesagt / verschoben; „ausgebucht“ und „Anmeldung geschlossen“ werden berechnet |
+| E-F7 | Veranstalter – wie abbilden? | – | ✅ **Entschieden:** Freitext |
 | E-F8 | Kartenansicht (W4) | Kacheln / Landkarte / beides | Kacheln in V1; Landkarte später, da Kartendienst nötig |
 | E-F9 | Wartelisten-Regeln | automatisch / manuell nachrücken; Gruppen ganz oder teilweise; Reservierungsfrist | Vorschlag folgt als eigenes Papier, sobald E-F3 und E-F11 geklärt sind |
 | E-F10 | Kontingente je Teilnehmerart? | eine Gesamtkapazität / getrennte Kontingente Mitglieder/Gäste | Gesamtkapazität in V1, Datenmodell so anlegen, dass Kontingente nachrüstbar sind |

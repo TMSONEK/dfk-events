@@ -49,11 +49,11 @@ Titel, Beschreibung, Bild, Veröffentlichungsstatus und Permalink liegen im Beit
 | `starts_at_local` | DATETIME NOT NULL | Ortszeit Europe/Berlin, für Anzeige und MV (siehe S2) |
 | `ends_at_local` | DATETIME NOT NULL | dito |
 | `all_day` | TINYINT(1) NOT NULL DEFAULT 0 | |
-| `event_status` | VARCHAR(20) NOT NULL DEFAULT 'scheduled' | `scheduled`, `cancelled`, `postponed` (E-F6, vorläufig) |
+| `event_status` | VARCHAR(20) NOT NULL DEFAULT 'scheduled' | `scheduled`, `cancelled`, `postponed` (E-F6 ✅) |
 | `format` | VARCHAR(10) NOT NULL DEFAULT 'onsite' | `onsite`, `online`, `hybrid` |
 | `location_id` | BIGINT UNSIGNED NULL | FK → locations; NULL bei reinen Online-Events |
 | `online_url` | VARCHAR(2048) NULL | nur für bestätigte Teilnehmer sichtbar (E-F13) |
-| `organizer` | VARCHAR(255) NULL | **vorläufig Freitext** – E-F7 offen |
+| `organizer` | VARCHAR(255) NULL | Freitext (E-F7 ✅) |
 | `registration_enabled` | TINYINT(1) NOT NULL DEFAULT 1 | |
 | `registration_opens_at` | DATETIME NULL | UTC, NULL = sofort |
 | `registration_closes_at` | DATETIME NULL | UTC, Anmeldeschluss |
@@ -70,7 +70,7 @@ Titel, Beschreibung, Bild, Veröffentlichungsstatus und Permalink liegen im Beit
 
 Indizes: `(starts_at)`, `(event_status, starts_at)`, `(location_id)`, `(updated_at)`.
 
-Die **Regionalgruppe** (E-F5) ist hier bewusst nicht enthalten – Vorschlag Taxonomie `dfk_region` in den WordPress-Tabellen.
+Die **Regionalgruppe** steht nicht in dieser Tabelle, sondern ist eine Taxonomie (siehe 3.8).
 
 ### 3.2 `wp_dfk_event_locations` – Veranstaltungsorte
 
@@ -179,7 +179,20 @@ Index: `UNIQUE (field_id, booking_id, attendee_id)`.
 
 Die MV erhält auf diese Tabelle **nur** `INSERT`. Bereinigt werden Events, deren Ende vor dem jüngsten `synced_at` liegt (ADR 0005).
 
-### 3.8 Später: `wp_dfk_event_checkins`
+### 3.8 Regionalgruppen – Taxonomie `dfk_region` (E-F5 ✅)
+
+Keine eigene Tabelle: WordPress-Taxonomie, gespeichert in `wp_terms` / `wp_term_taxonomy` / `wp_termmeta`. Dadurch gibt es Archivseiten, Filter und Rank-Math-Unterstützung ohne Zusatzaufwand.
+
+| Term-Meta | Typ | Bemerkung |
+|---|---|---|
+| `mv_regionalgruppe_id` | int, **Pflicht, eindeutig** | = `dbo.T_Regionalgruppen.RegionalgruppeID` der MV; Eindeutigkeit prüft der Service beim Speichern |
+| `active` | 0/1 | entspricht `T_Regionalgruppen.Aktiv`; inaktive Gruppen sind für neue Events nicht wählbar, bleiben aber an alten Events erhalten |
+
+- Name und Slug des Terms sind frei änderbar; maßgeblich für MV und Auswertungen ist ausschließlich `mv_regionalgruppe_id`.
+- Anlage: einmaliger Import der Liste aus der MV, danach Pflege im WP-Admin (Änderungen sind selten).
+- Die MV kennt außerdem eine PLZ-Zuordnung (`T_Regionalgruppen_PLZL`). Damit ließe sich später beim Anlegen eines Events die Regionalgruppe aus der PLZ des Veranstaltungsorts vorschlagen.
+
+### 3.9 Später: `wp_dfk_event_checkins`
 
 Für Check-in/QR-Code vorgesehen, **nicht Teil von V1**. Skizze: `attendee_id`, `checked_in_at`, `checked_in_by`, `device`, `code_hash`.
 
@@ -217,6 +230,13 @@ Die MV liest ausschließlich diese Views. Spaltennamen orientieren sich an `T_Te
 | `Anmeldedatum` | `attendees.created_at` (Ortszeit) |
 | `LastUpdate` | `attendees.updated_at` |
 
+**`wp_dfk_mv_event_regions_v1`** – Zuordnung Event ↔ Regionalgruppe
+
+| Spalte | Herkunft |
+|---|---|
+| `TerminID` | `wp_term_relationships.object_id` |
+| `RegionalgruppeID` | Term-Meta `mv_regionalgruppe_id` |
+
 Zusatzfelder werden als eigene View `wp_dfk_mv_field_values_v1` (Teilnehmer-ID, Feldname, Wert) bereitgestellt – **ohne** sensible Felder, sofern nicht ausdrücklich freigegeben.
 
 ## 5. Schema-Entscheidungen zur Freigabe
@@ -232,8 +252,6 @@ Zusatzfelder werden als eigene View `wp_dfk_mv_field_values_v1` (Teilnehmer-ID, 
 
 ## 6. Noch offen und schema-relevant
 
-- **E-F5 Regionalgruppe** – Taxonomie (Vorschlag) oder eigene Tabelle? Sollen die Kennungen denen der MV entsprechen?
-- **E-F7 Veranstalter** – bleibt es beim Freitext?
-- **E-F6 Eventstatus** – reichen `scheduled`, `cancelled`, `postponed`?
+- **Regionalgruppen je Event:** genau eine oder mehrere (z. B. gemeinsame Veranstaltung zweier Gruppen)? Das Schema erlaubt beides; die Einschränkung auf eine wäre eine Regel im Service.
 - **E-F9 Warteliste** – das Schema unterstützt Status `waitlisted` und Reihenfolge; die Regeln selbst sind offen.
 - **E-F2 Wiederkehrende Events** – nicht abgebildet; „Event duplizieren“ braucht keine Schemaänderung.
