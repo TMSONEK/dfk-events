@@ -202,6 +202,17 @@ Keine eigene Tabelle: WordPress-Taxonomie (`wp_terms` / `wp_term_taxonomy` / `wp
 - Name und Slug des Terms sind frei änderbar; maßgeblich für MV und Auswertungen sind ausschließlich `unit_type` + `mv_key`.
 - Anlage: einmaliger Import der Regionalgruppen aus der MV, Netzwerke und DFK manuell; danach Pflege im WP-Admin.
 - Filter „Regionalgruppe“ in der Übersicht wird zum Filter „Veranstalter“. DFK-/Online-Events werden – wie beim Umkreisfilter – unabhängig vom gewählten Regionalfilter angezeigt (Vorschlag).
+**Befund aus `dbo.T_Termine.Veranstalter` (MV, 17.11.2026, nur diese Spalte gelesen):**
+
+- Heute steht der Veranstalter als **Freitext** in TEC und wird so in die MV übernommen. Ergebnis: rund 75 verschiedene Schreibweisen für etwa 25 tatsächliche Einheiten, z. B. Berlin/Brandenburg in fünf Varianten, Tippfehler wie „RG Niedersachen“ und „RG Düssedorf“. Eine Auswertung nach Veranstalter ist so kaum möglich. **Deshalb ersetzt die Auswahl der Einheit den Freitext.**
+- Aktuell (Events 2025–2027) genutzte Veranstalter:
+  - **DFK**
+  - **Regionalgruppen:** Köln, Süd, Nord, Düsseldorf, Essen, Nordbayern, Südwest, Ruhr, Weser-Ems, Saar, Berlin-Brandenburg, Niedersachsen, Hessen, Westfalen, Mitteldeutschland, Niederrhein
+  - **Netzwerke:** weibliche FK, Young Professionals, Netzwerk 60+ (früher auch Young Leaders, VGF)
+  - **Sonstige:** „Kooperationspartner“ (31 Events seit 2022), „IfKom Bezirk Köln“ (9 Events seit 2025)
+- Mehrere Veranstalter je Event kamen nur bis 2016 vor (z. B. „RG Ruhr / RG Niederrhein“). Die Regel „genau eine Einheit“ passt zur heutigen Praxis.
+- Für die Migration wird eine **Zuordnungstabelle alter Schreibweise → Einheit** benötigt.
+
 - Die MV kennt eine PLZ-Zuordnung (`T_Regionalgruppen_PLZL`). Damit ließe sich später beim Anlegen eines Events die Regionalgruppe aus der PLZ des Veranstaltungsorts vorschlagen.
 
 ### 3.9 Später: `wp_dfk_event_checkins`
@@ -267,7 +278,7 @@ Zusatzfelder werden als eigene View `wp_dfk_mv_field_values_v1` (Teilnehmer-ID, 
 
 ## 6. Noch offen und schema-relevant
 
-- **Veranstalter-Freitext (`organizer`)**: Bleibt er zusätzlich zur veranstaltenden Einheit bestehen (z. B. für Kooperationspartner), oder ersetzt die Einheit ihn ganz?
+- **Veranstalter-Freitext (`organizer`)**: Vorschlag – die Einheit ersetzt den Freitext (Befund in 3.8). Wie werden **Kooperationspartner** und **IfKom Bezirk Köln** abgebildet: als eigener Einheitstyp `kooperation` oder als DFK-/RG-Event mit optionalem Freitext „Partner“?
 - **Hybride Events** (vor Ort + online): gehören sie der Einheit vor Ort oder automatisch dem DFK?
 - **E-F9 Warteliste** – das Schema unterstützt Status `waitlisted` und Reihenfolge; die Regeln selbst sind offen.
 - **E-F2 Wiederkehrende Events** – nicht abgebildet; „Event duplizieren“ braucht keine Schemaänderung.
