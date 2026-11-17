@@ -179,18 +179,30 @@ Index: `UNIQUE (field_id, booking_id, attendee_id)`.
 
 Die MV erhält auf diese Tabelle **nur** `INSERT`. Bereinigt werden Events, deren Ende vor dem jüngsten `synced_at` liegt (ADR 0005).
 
-### 3.8 Regionalgruppen – Taxonomie `dfk_region` (E-F5 ✅)
+### 3.8 Veranstaltende Einheit – Taxonomie `dfk_unit` (E-F5 ✅)
 
-Keine eigene Tabelle: WordPress-Taxonomie, gespeichert in `wp_terms` / `wp_term_taxonomy` / `wp_termmeta`. Dadurch gibt es Archivseiten, Filter und Rank-Math-Unterstützung ohne Zusatzaufwand.
+Jedes Event gehört **genau einer** veranstaltenden Einheit. Das kann sein:
+
+| Typ | Beispiel | Kennung aus der MV |
+|---|---|---|
+| `dfk` | der DFK selbst (Bundesebene) | – (genau ein Eintrag) |
+| `regionalgruppe` | Regionalgruppe München | `RegionalgruppeID` aus `dbo.T_Regionalgruppen` |
+| `netzwerk` | Netzwerk FN, YP, 60plus … | Netzwerk-Kürzel der MV |
+
+**Regel:** Online-Veranstaltungen gehören **immer dem DFK**, weil sie räumlich nicht begrenzt sind. Der `EventService` setzt das beim Speichern automatisch und lässt keine andere Einheit zu.
+
+Keine eigene Tabelle: WordPress-Taxonomie (`wp_terms` / `wp_term_taxonomy` / `wp_termmeta`). Dadurch gibt es Archivseiten, Filter und Rank-Math-Unterstützung ohne Zusatzaufwand.
 
 | Term-Meta | Typ | Bemerkung |
 |---|---|---|
-| `mv_regionalgruppe_id` | int, **Pflicht, eindeutig** | = `dbo.T_Regionalgruppen.RegionalgruppeID` der MV; Eindeutigkeit prüft der Service beim Speichern |
-| `active` | 0/1 | entspricht `T_Regionalgruppen.Aktiv`; inaktive Gruppen sind für neue Events nicht wählbar, bleiben aber an alten Events erhalten |
+| `unit_type` | `dfk` / `regionalgruppe` / `netzwerk` | Pflicht |
+| `mv_key` | Text, **Pflicht außer bei `dfk`**, eindeutig je Typ | `RegionalgruppeID` bzw. Netzwerk-Kürzel; Eindeutigkeit prüft der Service |
+| `active` | 0/1 | inaktive Einheiten sind für neue Events nicht wählbar, bleiben aber an alten Events erhalten |
 
-- Name und Slug des Terms sind frei änderbar; maßgeblich für MV und Auswertungen ist ausschließlich `mv_regionalgruppe_id`.
-- Anlage: einmaliger Import der Liste aus der MV, danach Pflege im WP-Admin (Änderungen sind selten).
-- Die MV kennt außerdem eine PLZ-Zuordnung (`T_Regionalgruppen_PLZL`). Damit ließe sich später beim Anlegen eines Events die Regionalgruppe aus der PLZ des Veranstaltungsorts vorschlagen.
+- Name und Slug des Terms sind frei änderbar; maßgeblich für MV und Auswertungen sind ausschließlich `unit_type` + `mv_key`.
+- Anlage: einmaliger Import der Regionalgruppen aus der MV, Netzwerke und DFK manuell; danach Pflege im WP-Admin.
+- Filter „Regionalgruppe“ in der Übersicht wird zum Filter „Veranstalter“. DFK-/Online-Events werden – wie beim Umkreisfilter – unabhängig vom gewählten Regionalfilter angezeigt (Vorschlag).
+- Die MV kennt eine PLZ-Zuordnung (`T_Regionalgruppen_PLZL`). Damit ließe sich später beim Anlegen eines Events die Regionalgruppe aus der PLZ des Veranstaltungsorts vorschlagen.
 
 ### 3.9 Später: `wp_dfk_event_checkins`
 
@@ -230,12 +242,15 @@ Die MV liest ausschließlich diese Views. Spaltennamen orientieren sich an `T_Te
 | `Anmeldedatum` | `attendees.created_at` (Ortszeit) |
 | `LastUpdate` | `attendees.updated_at` |
 
-**`wp_dfk_mv_event_regions_v1`** – Zuordnung Event ↔ Regionalgruppe
+Zusätzliche Spalten in **`wp_dfk_mv_events_v1`** für die veranstaltende Einheit:
 
 | Spalte | Herkunft |
 |---|---|
-| `TerminID` | `wp_term_relationships.object_id` |
-| `RegionalgruppeID` | Term-Meta `mv_regionalgruppe_id` |
+| `EinheitTyp` | Term-Meta `unit_type` (`dfk`, `regionalgruppe`, `netzwerk`) |
+| `EinheitKennung` | Term-Meta `mv_key` (`RegionalgruppeID` bzw. Netzwerk-Kürzel, leer bei DFK) |
+| `EinheitName` | Term-Name |
+
+Da jedes Event genau eine Einheit hat, ist keine eigene Zuordnungs-View nötig.
 
 Zusatzfelder werden als eigene View `wp_dfk_mv_field_values_v1` (Teilnehmer-ID, Feldname, Wert) bereitgestellt – **ohne** sensible Felder, sofern nicht ausdrücklich freigegeben.
 
@@ -252,6 +267,7 @@ Zusatzfelder werden als eigene View `wp_dfk_mv_field_values_v1` (Teilnehmer-ID, 
 
 ## 6. Noch offen und schema-relevant
 
-- **Regionalgruppen je Event:** genau eine oder mehrere (z. B. gemeinsame Veranstaltung zweier Gruppen)? Das Schema erlaubt beides; die Einschränkung auf eine wäre eine Regel im Service.
+- **Veranstalter-Freitext (`organizer`)**: Bleibt er zusätzlich zur veranstaltenden Einheit bestehen (z. B. für Kooperationspartner), oder ersetzt die Einheit ihn ganz?
+- **Hybride Events** (vor Ort + online): gehören sie der Einheit vor Ort oder automatisch dem DFK?
 - **E-F9 Warteliste** – das Schema unterstützt Status `waitlisted` und Reihenfolge; die Regeln selbst sind offen.
 - **E-F2 Wiederkehrende Events** – nicht abgebildet; „Event duplizieren“ braucht keine Schemaänderung.

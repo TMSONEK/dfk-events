@@ -15,7 +15,7 @@ Stand: 17.11.2026 · Status: **Entwurf, teilweise entschieden – Rest wartet au
 | E-F24 | Zusatzfelder können als „sensibel“ markiert werden (eingeschränkte Sichtbarkeit, verschlüsselt, nicht in API/Mails/Logs, automatische Löschung). | – |
 | E-F15 | Personenbezogene Daten werden nach Übernahme ins CRM gelöscht, normalerweise direkt nach der Veranstaltung, spätestens 30 Tage danach. | [0005](adr/0005-datenlebenszyklus-crm.md) |
 | E-F26/27 | Schnittstelle zur MV: versionierte DB-Views mit eingeschränktem MySQL-Benutzer; MV bestätigt Sync per Zeitstempel, danach Bereinigung. | [mv-schnittstelle.md](mv-schnittstelle.md) |
-| E-F5 | Regionalgruppen als Taxonomie, Kennung = `RegionalgruppeID` der MV. | [datenbankschema.md](datenbankschema.md) |
+| E-F5 | Jedes Event gehört genau einer veranstaltenden Einheit: DFK, Regionalgruppe oder Netzwerk (Taxonomie `dfk_unit`, Kennung aus der MV). Online-Events gehören immer dem DFK. | [datenbankschema.md](datenbankschema.md) |
 | E-F6 | Eventstatus: findet statt / abgesagt / verschoben. | – |
 | E-F7 | Veranstalter als Freitext; jedes Event hat genau einen Veranstalter (Pflicht). | – |
 | Rahmen | Hosting: WordPress, MySQL ist nach Bedarf wählbar. Daher dürfen InnoDB und eine aktuelle MySQL-Version vorausgesetzt werden. | – |
@@ -172,6 +172,7 @@ dfk-events/
 │   │
 │   ├── Integration/               WordPress- und Drittanbieter-Anbindung, keine Geschäftslogik
 │   │   ├── EventPostType.php          CPT dfk_event, Rewrite /event/
+│   │   ├── UnitTaxonomy.php           Taxonomie dfk_unit (DFK / Regionalgruppe / Netzwerk)
 │   │   ├── PostSync.php               Hält CPT und Tabelle dfk_events konsistent (E-T5)
 │   │   ├── TemplateLoader.php         template_include, unabhängig von Elementor
 │   │   ├── RankMath.php               Event-Schema/Meta ohne doppelte Ausgabe
@@ -294,7 +295,7 @@ Jede Entscheidung erhält eine ID. Freigegebene Entscheidungen werden als eigene
 | E-F2 | Wiederkehrende Veranstaltungen? | nein / einfache Kopierfunktion / echte Serien | Kopierfunktion („Event duplizieren“) in V1, echte Serien später |
 | E-F3 | Dürfen Gäste ohne Login buchen? | – | ✅ **Entschieden:** Buchen ist immer ohne Login möglich, ein Login füllt nur Daten vor |
 | E-F4 | Wie wird die Teilnehmerart „Mitglied“ festgestellt, wenn ohne Login gebucht wird? | – | ✅ **Entschieden:** Je Teilnehmer ein Dropdown „Mitglied / Nichtmitglied“, Selbstauskunft ohne Prüfung, keine Mitgliedsnummer (ADR 0003) |
-| E-F5 | Regionalgruppe – wie abbilden? | – | ✅ **Entschieden:** Taxonomie `dfk_region`; jede Regionalgruppe trägt **zwingend die `RegionalgruppeID` der MV** (`dbo.T_Regionalgruppen`) als Term-Meta |
+| E-F5 | Regionalgruppe – wie abbilden? | – | ✅ **Entschieden:** Taxonomie `dfk_unit` mit Typ DFK / Regionalgruppe / Netzwerk, genau eine je Event; Kennung aus der MV (`RegionalgruppeID` bzw. Netzwerk-Kürzel). Online-Events → immer DFK |
 | E-F6 | Veranstaltungsstatus | – | ✅ **Entschieden:** findet statt / abgesagt / verschoben; „ausgebucht“ und „Anmeldung geschlossen“ werden berechnet |
 | E-F7 | Veranstalter – wie abbilden? | – | ✅ **Entschieden:** Freitext |
 | E-F8 | Kartenansicht (W4) | Kacheln / Landkarte / beides | Kacheln in V1; Landkarte später, da Kartendienst nötig |
