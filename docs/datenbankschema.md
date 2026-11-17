@@ -53,7 +53,7 @@ Titel, Beschreibung, Bild, Veröffentlichungsstatus und Permalink liegen im Beit
 | `format` | VARCHAR(10) NOT NULL DEFAULT 'onsite' | `onsite`, `online`, `hybrid` |
 | `location_id` | BIGINT UNSIGNED NULL | FK → locations; NULL bei reinen Online-Events |
 | `online_url` | VARCHAR(2048) NULL | nur für bestätigte Teilnehmer sichtbar (E-F13) |
-| `organizer` | VARCHAR(255) NULL | Freitext (E-F7 ✅) |
+| `organizer` | VARCHAR(255) NOT NULL | Freitext (E-F7 ✅); jedes Event hat **genau einen** Veranstalter (Pflicht) |
 | `registration_enabled` | TINYINT(1) NOT NULL DEFAULT 1 | |
 | `registration_opens_at` | DATETIME NULL | UTC, NULL = sofort |
 | `registration_closes_at` | DATETIME NULL | UTC, Anmeldeschluss |

@@ -17,7 +17,7 @@ Stand: 17.11.2026 · Status: **Entwurf, teilweise entschieden – Rest wartet au
 | E-F26/27 | Schnittstelle zur MV: versionierte DB-Views mit eingeschränktem MySQL-Benutzer; MV bestätigt Sync per Zeitstempel, danach Bereinigung. | [mv-schnittstelle.md](mv-schnittstelle.md) |
 | E-F5 | Regionalgruppen als Taxonomie, Kennung = `RegionalgruppeID` der MV. | [datenbankschema.md](datenbankschema.md) |
 | E-F6 | Eventstatus: findet statt / abgesagt / verschoben. | – |
-| E-F7 | Veranstalter als Freitext. | – |
+| E-F7 | Veranstalter als Freitext; jedes Event hat genau einen Veranstalter (Pflicht). | – |
 | Rahmen | Hosting: WordPress, MySQL ist nach Bedarf wählbar. Daher dürfen InnoDB und eine aktuelle MySQL-Version vorausgesetzt werden. | – |
 
 Aus E-F3 ergeben sich die neuen offenen Punkte E-F17 bis E-F20 (Abschnitt 5.1).
