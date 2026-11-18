@@ -1,6 +1,6 @@
 # DFK Events – Anbindung der DFK-App
 
-Stand: 18.11.2026 · Status: **Analyse + Vorschlag, wartet auf Freigabe**
+Stand: 18.11.2026 · Status: **3.1 freigegeben (mit Absicherung), 3.2 vorläufig – Prüfung am Prototyp**
 
 Quelle: Repository `dfk-app` (Alpha). Gelesen wurden `api/events.php`, `api/lib/wordpress.php`, `api/login.php`, `src/distance.ts` und `toDo.md`; keine Konfigurations- oder Zugangsdateien.
 
@@ -35,7 +35,19 @@ Mit der Deaktivierung von The Events Calendar **entfällt der Endpunkt, aus dem 
 
 - Ersetzt den TEC-Endpunkt nahezu 1:1; im App-Backend ändert sich nur `api/events.php`.
 - Kein Schreibzugriff über REST. Die Website selbst braucht für das Buchen keinen REST-Endpunkt (normaler Formularversand).
-- Alternative ohne REST: Das App-Backend liest die MV-Views direkt per MySQL. Nachteil: Die WordPress-Datenbank müsste vom App-Hosting aus erreichbar sein.
+**Freigegeben (Captain, 18.11.2026) mit entsprechender Absicherung:**
+
+| Maßnahme | Umsetzung |
+|---|---|
+| Nur lesen | Ausschließlich `GET`; keine weiteren Routen unter `dfk-events/v1` |
+| Keine personenbezogenen Daten | Nur Veranstaltungsdaten; keine Anmeldungen, Namen, E-Mails; **kein Online-Zugangslink** |
+| Nur Veröffentlichtes | Nur Beiträge mit Status `publish`, nur laufende und kommende Termine |
+| Feste Antwortform | Feste Feldliste, keine frei wählbaren Felder oder Filter außer Seite/Zeitraum; Eingaben werden geprüft |
+| Last begrenzen | Antwort wird serverseitig zwischengespeichert (5 Minuten); höchstens 100 Einträge je Seite; Anfragebegrenzung je IP |
+| App-Kennung (optional) | Das App-Backend sendet einen geheimen Schlüssel im Header (`X-DFK-App-Key`, hinterlegt in `wp-config.php`). Ohne Schlüssel gilt eine strengere Anfragebegrenzung. |
+| Abschaltbar | Endpunkt per Einstellung deaktivierbar |
+
+Die Alternative ohne REST (App-Backend liest die Views direkt per MySQL) entfällt damit.
 
 ### 3.2 Buchen: über die WordPress-Seite, ohne die App sichtbar zu verlassen
 
@@ -44,6 +56,8 @@ Die App bucht über die Website (Entscheidung Captain). Damit das zur Pilot-Ents
 - DFK Events stellt das Buchungsformular zusätzlich als **reduzierte Seite ohne Kopf, Fuß und Navigation** bereit, z. B. `/event/<slug>/anmelden/?ansicht=app`.
 - Die App öffnet diese Seite in einer In-App-Ansicht (iOS: `SFSafariViewController`, Android: Custom Tab). Der Nutzer bleibt optisch in der App.
 - Buchungslogik, Kapazitätsprüfung, Warteliste und Mails bleiben ausschließlich im Plugin.
+
+**Status:** vorläufig angenommen. Der Captain entscheidet endgültig, wenn ein Prototyp der reduzierten Anmeldeseite zu sehen ist. Der Aufwand ist gering, weil es dasselbe Formular mit einem schlankeren Template ist.
 
 ### 3.3 „Meine Termine“ (später)
 
