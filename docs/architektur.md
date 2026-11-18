@@ -23,6 +23,7 @@ Stand: 18.11.2026 · Status: **Entwurf, teilweise entschieden – Rest wartet au
 | E-F16 | Keine Migration der TEC-Veranstaltungen; Anmeldungen bei Bedarf von Hand. Nur Deutschland. 100–120 Veranstaltungen pro Jahr – schlank halten. | [0006](adr/0006-schlanker-umfang.md) |
 | – | Drei Tabellen: Veranstaltungen (Zusatzfelder als JSON), Orte (mit Geokoordinaten) und Anmeldungen (eine Zeile je Person, Buchungs-ID, Wartelisten-Flag). MV wird gleich aufgebaut. | [0007](adr/0007-zwei-tabellen.md) |
 | E-F9 | Warteliste manuell: kein automatisches Nachrücken, Mitgliederservice entscheidet. Passt eine Gruppe nicht vollständig, kommt die ganze Buchung auf die Warteliste. Mails nur bei Buchung, Storno, Änderung. | [0008](adr/0008-warteliste-und-mails.md) |
+| – | **Vorschlag:** MV schreibt Namenskorrekturen, Mitgliedsnummer und geprüften Status direkt in die Anmeldungen zurück (spaltengenaue MySQL-Rechte). | [0009](adr/0009-rueckschreiben-mv.md) |
 | E-F17 | Kein Double-Opt-in in V1; Spamschutz über Honeypot und Rate-Limit. | [datenbankschema.md](datenbankschema.md) |
 | Rahmen | Hosting: WordPress, MySQL ist nach Bedarf wählbar. Daher dürfen InnoDB und eine aktuelle MySQL-Version vorausgesetzt werden. | – |
 

@@ -62,6 +62,10 @@ Inkrementell: Es werden nur Datensätze mit `post_modified >= T_Konstanten.DatTe
 
 **Empfehlung:** A für den Start, B, sobald die .NET-MV den Teil „Veranstaltungen“ übernimmt. Beide Varianten lesen dieselben Services/Daten, die Entscheidung ist also nicht endgültig.
 
+### Rückschreiben durch die MV (ADR 0009, Vorschlag)
+
+Die MV darf ausgewählte Spalten der Anmeldungen direkt aktualisieren: Vor- und Nachname (Korrekturen), Mitgliedsnummer, geprüfter Mitgliedsstatus und Zeitpunkt der Prüfung. Umgesetzt über spaltengenaue MySQL-Rechte; alle anderen Daten bleiben für die MV nur lesbar.
+
 ### Stornos und Löschung
 
 - Heute sieht die MV gelöschte Anmeldungen in WordPress nicht. Neu: Stornierte Teilnehmer bleiben bis zur Bereinigung mit **Status „storniert“** und neuem `updated_at` in der View, damit die MV sie nachziehen kann.

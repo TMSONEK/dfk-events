@@ -96,9 +96,14 @@ Orte werden wiederverwendet; die Koordinaten liegen damit an genau einer Stelle.
 | `waitlist` | TINYINT(1) NOT NULL DEFAULT 0 | **Wartelisten-Flag** (ADR 0008) |
 | `extra_values` | JSON NULL | Werte der Zusatzfelder; sensible Werte verschlüsselt |
 | `token_hash` | CHAR(64) NULL | Verwaltungslink, nur in der Anmelderzeile |
+| `mv_member_no` | INT UNSIGNED NULL | **von der MV geschrieben**: zugeordnete Mitgliedsnummer (ADR 0009) |
+| `mv_status` | VARCHAR(30) NULL | **von der MV geschrieben**: geprüfter Status, z. B. `Mitglied`, `Interessent` |
+| `mv_updated_at` | DATETIME NULL | **von der MV geschrieben**: Zeitpunkt der letzten Rückmeldung |
 | `created_at`, `updated_at` | DATETIME NOT NULL | `created_at` = Reihenfolge der Warteliste |
 
 Indizes: `(event_id, status, waitlist)`, `(booking_id)`, `(event_id, email)`, `(updated_at)`, `UNIQUE (token_hash)`.
+
+`attendee_type` bleibt die Selbstauskunft aus dem Formular; `mv_status` ist der von der MV geprüfte Status. Beide stehen nebeneinander, nichts wird überschrieben.
 
 **Belegte Plätze** = Anzahl Zeilen mit `status = 'active'` und `waitlist = 0`.
 
@@ -182,12 +187,25 @@ Die MV liest nur diese Views. Sie bilden die künftigen MV-Tabellen `T_Veranstal
 | `BuchungID` | `booking_id` |
 | `GastStatus` | `H` / `B` aus `is_booker` |
 | `Vorname`, `Nachname`, `EMail` | |
-| `TeilnehmerartAngabe` | `Mitglied` / `Nichtmitglied` |
+| `TeilnehmerartAngabe` | `Mitglied` / `Nichtmitglied` (Selbstauskunft) |
+| `MitgliedNr`, `MVStatus`, `MVGeprueftAm` | `mv_member_no`, `mv_status`, `mv_updated_at` (von der MV zurückgeschrieben) |
 | `Status` | `aktiv`, `storniert`, `nimmt_nicht_teil` |
 | `Warteliste` | `waitlist` |
 | `Zusatzangaben` | `extra_values` **ohne** sensible Felder |
 | `Anmeldedatum` | `created_at` |
 | `LastUpdate` | `updated_at` |
+
+### Rückschreiben durch die MV (ADR 0009)
+
+Der MySQL-Benutzer der MV erhält zusätzlich **spaltengenaue** Rechte auf `wp_dfk_registrations`:
+
+```sql
+GRANT SELECT (id, booking_id, event_id) ON wp_dfk_registrations TO 'dfk_mv'@'<host>';
+GRANT UPDATE (first_name, last_name, mv_member_no, mv_status, mv_updated_at)
+      ON wp_dfk_registrations TO 'dfk_mv'@'<host>';
+```
+
+Alle anderen Spalten (E-Mail, Status, Warteliste, Token, Zusatzwerte) bleiben für die MV nur über die View lesbar. Rückgeschriebene Änderungen lösen **keine** Mail aus. `updated_at` ändert sich dabei mit; die MV sieht ihre eigene Änderung beim nächsten Abgleich wieder – das ist unschädlich.
 
 ## 5. Schema-Entscheidungen zur Freigabe
 
