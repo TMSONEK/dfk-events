@@ -36,12 +36,12 @@ Mobil: Bild über dem Text, volle Breite.
 
 Farben und Schriften kommen aus dem Astra-Child-Theme; das Plugin bringt nur eine kleine eigene CSS-Datei für Karten, Badge und Formular mit.
 
-## 3. Offene Gestaltungsfragen
+## 3. Gestaltungsfragen (entschieden 18.11.2026)
 
-| # | Frage | Empfehlung |
+| # | Thema | Entscheidung |
 |---|---|---|
-| O5 | **Google-Karte**: Die eingebettete Google-Karte lädt ohne Einwilligung Inhalte von Google (Datenschutz). | Statt Einbettung ein Link „In Google Maps öffnen“ mit den gespeicherten Koordinaten; oder Karte erst nach Klick laden |
-| O6 | **Foto-/Film-Hinweis** wird heute in jede Beschreibung kopiert | Einmal als Einstellung hinterlegen und automatisch unter jeder Veranstaltung und im Anmeldeformular anzeigen (pro Veranstaltung abschaltbar) |
-| O7 | **Veranstalter-E-Mail** (heute z. B. veranstaltungen@dfk.eu) | Optionale E-Mail am Veranstalter (`dfk_unit`); fehlt sie, gilt eine zentrale Adresse aus den Einstellungen |
+| O5 | **Google-Karte** | Bleibt eingebettet wie heute. Auf dfk.eu ist **Borlabs Cookie** mit Content Blocker für Google, YouTube usw. vorgeschaltet. Das Plugin gibt eine normale Google-Maps-Einbettung (`iframe` mit den gespeicherten Koordinaten, ohne API-Schlüssel) aus, damit der Borlabs-Content-Blocker sie erkennt und erst nach Einwilligung lädt. Dazu der Link „+Google Map“ |
+| O6 | **Foto-/Film-Hinweis** | Einmal in den Einstellungen hinterlegt, automatisch unter jeder Veranstaltung und im Anmeldeformular angezeigt; pro Veranstaltung abschaltbar |
+| O7 | **Veranstalter-E-Mail** | Optionale E-Mail je Veranstalter (Term-Meta `email` an `dfk_unit`); fehlt sie, gilt die zentrale Adresse aus den Einstellungen |
 
 Hinweis: Die Screenshots liegen in `src/`. Dort entsteht später der Plugin-Code; vorgeschlagen ist, sie nach `docs/design-referenz/` zu verschieben.

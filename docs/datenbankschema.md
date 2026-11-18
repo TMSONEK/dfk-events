@@ -54,6 +54,7 @@ Taxonomie dfk_unit                    Veranstalter (aus MV T_Veranstalter)
 | `allow_non_members` | TINYINT(1) NOT NULL DEFAULT 1 | |
 | `allow_multiple_bookings` | TINYINT(1) NOT NULL DEFAULT 0 | mehrere Buchungen je E-Mail |
 | `waitlist_enabled` | TINYINT(1) NOT NULL DEFAULT 1 | |
+| `show_media_notice` | TINYINT(1) NOT NULL DEFAULT 1 | zentralen Foto-/Film-Hinweis anzeigen |
 | `extra_fields` | JSON NULL | Definition der Zusatzfelder (siehe 3.3) |
 | `purged_at` | DATETIME NULL | Zeitpunkt der Bereinigung |
 | `created_at`, `updated_at` | DATETIME NOT NULL | |
@@ -144,6 +145,7 @@ Jede Veranstaltung hat genau einen Veranstalter aus der MV-Liste `T_Veranstalter
 | `mv_veranstalter_id` | = `T_Veranstalter.InterneID`, Pflicht, eindeutig |
 | `unit_type` | `dfk`, `regionalgruppe`, `netzwerk`, `kooperation` |
 | `active` | inaktive Veranstalter sind für neue Veranstaltungen nicht wählbar |
+| `email` | optional; Kontaktadresse in der Box „Veranstalter“, sonst zentrale Adresse aus den Einstellungen |
 
 Reine Online-Veranstaltungen gehören immer dem DFK; hybride dem Veranstalter vor Ort.
 

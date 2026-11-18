@@ -50,13 +50,15 @@ Stand: 18.11.2026 · Reihenfolge: Konzept fertigstellen → andere laufende Proj
 | O4 | Seiten-Caching | Derzeit nur minimal aktiv, wird vom Captain überarbeitet. Das Plugin geht davon aus, dass Seiten gecacht werden können (Formular und freie Plätze werden dynamisch geladen, B3) |
 | B5 | Elementor | **Präzisiert:** V1 mit eigenen Templates; **Shortcodes in Schritt 2**. Zur Not wird HTML in einem Elementor-Container eingebunden |
 
+| O5 | Google-Karte | Eingebettet wie heute; Borlabs Cookie (Content Blocker) ist vorgeschaltet |
+| O6 | Foto-/Film-Hinweis | Einmal als Einstellung, automatisch unter jeder Veranstaltung und im Formular; pro Veranstaltung abschaltbar |
+| O7 | Veranstalter-E-Mail | Optional je Veranstalter, sonst zentrale Adresse aus den Einstellungen |
+
 ## Noch offen
 
-| # | Frage | Empfehlung |
+| # | Thema | Stand |
 |---|---|---|
-| O5 | Google-Karte auf der Detailseite (lädt ohne Einwilligung Inhalte von Google) | Link „In Google Maps öffnen“ statt Einbettung, oder Karte erst nach Klick |
-| O6 | Foto-/Film-Hinweis, heute in jeder Beschreibung kopiert | Einmal als Einstellung, automatisch unter jeder Veranstaltung und im Formular; pro Veranstaltung abschaltbar |
-| O7 | E-Mail in der Box „Veranstalter“ | Optionale E-Mail je Veranstalter, sonst zentrale Adresse aus den Einstellungen |
+| O8 | Texte der drei automatischen Mails (Buchung bzw. Warteliste, Storno, Änderung) | Entwurf durch Coding Agent, Freigabe durch den Captain |
 
 ## C. Für die MV-Seite (separates Projekt)
 
