@@ -125,6 +125,12 @@ Definition in `wp_dfk_events.extra_fields`:
 
 Werte in `wp_dfk_registrations.extra_values` als `{ "ausweis": "<verschlüsselt>", "essen": "Vegetarisch" }`. Felder mit `scope = booking` stehen nur in der Anmelderzeile.
 
+Regeln (freigegeben 18.11.2026):
+- Pflege in der Metabox der Veranstaltung; „Felder aus Veranstaltung X übernehmen“ statt Vorlagen.
+- Sensible Werte werden einzeln verschlüsselt (Schlüssel in `wp-config.php`).
+- Sobald Anmeldungen vorliegen: `key` und `type` sind fest, `label` ist änderbar; gelöschte Felder werden nur ausgeblendet, vorhandene Werte bleiben erhalten.
+- Keine veranstaltungsübergreifenden Abfragen über Zusatzfelder (Auswertungen macht die MV).
+
 ### 3.5 Bereinigung
 
 Ein täglicher Cron löscht alle Anmeldungen von Veranstaltungen, deren Ende mehr als **30 Tage** zurückliegt, und setzt `purged_at` (ADR 0005). Keine eigene Tabelle, keine Bestätigung durch die MV.
@@ -184,7 +190,7 @@ Die MV liest nur diese Views. Sie bilden die künftigen MV-Tabellen `T_Veranstal
 | `MitgliedNr`, `MVStatus`, `MVGeprueftAm` | `mv_member_no`, `mv_status`, `mv_updated_at` (von der MV zurückgeschrieben) |
 | `Status` | `aktiv`, `storniert`, `nimmt_nicht_teil` |
 | `Warteliste` | `waitlist` |
-| `Zusatzangaben` | `extra_values` **ohne** sensible Felder |
+| `Zusatzangaben` | `extra_values` als JSON, **ohne** sensible Felder |
 | `Anmeldedatum` | `created_at` |
 | `LastUpdate` | `updated_at` |
 
@@ -199,6 +205,17 @@ GRANT UPDATE (first_name, last_name, mv_member_no, mv_status, mv_updated_at)
 ```
 
 Alle anderen Spalten (E-Mail, Status, Warteliste, Token, Zusatzwerte) bleiben für die MV nur über die View lesbar. Rückgeschriebene Änderungen lösen **keine** Mail aus. `updated_at` ändert sich dabei mit; die MV sieht ihre eigene Änderung beim nächsten Abgleich wieder – das ist unschädlich.
+
+**`wp_dfk_mv_zusatzangaben_v1`** – Zusatzangaben als Zeilen, damit die MV kein JSON zerlegen muss (über `JSON_TABLE`, MySQL 8 / MariaDB 10.6)
+
+| Spalte | Herkunft |
+|---|---|
+| `AnmeldungID` | `wp_dfk_registrations.id` |
+| `Feld` | `key` aus der Felddefinition |
+| `Bezeichnung` | `label` aus der Felddefinition |
+| `Wert` | Wert aus `extra_values` |
+
+Sensible Felder sind in dieser View nicht enthalten.
 
 ## 5. Schema-Entscheidungen zur Freigabe
 
