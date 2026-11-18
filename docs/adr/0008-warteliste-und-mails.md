@@ -17,7 +17,7 @@ Datum: 18.11.2026 · Status: **Angenommen** (Captain)
 
 Keine Erinnerungsmails, keine Mails an einzelne Gäste.
 
-## Vorschlag zur Freigabe: Gruppenbuchung bei knappen Plätzen
+**Gruppenbuchung bei knappen Plätzen** (bestätigt 18.11.2026)
 
 Passt eine Buchung nicht mehr vollständig in die freien Plätze, kommt **die ganze Buchung** auf die Warteliste. Der Mitgliederservice kann einzelne Personen daraus nachrücken lassen. So wird keine Gruppe ungefragt getrennt.
 

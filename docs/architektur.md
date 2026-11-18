@@ -2,7 +2,7 @@
 
 Stand: 18.11.2026 · Status: **Entwurf, teilweise entschieden – Rest wartet auf Freigabe durch den Captain**
 
-> **Hinweis 18.11.2026:** Mit ADR 0006–0008 wurde der Umfang deutlich verschlankt (zwei Tabellen, keine Migration, Warteliste manuell). Abschnitt 0 und 2 sind aktuell. Die Tabellen in Abschnitt 4 und 5 sind die ursprüngliche Analyse; Punkte, die durch die Verschlankung entfallen, sind dort nicht mehr einzeln nachgezogen.
+> **Hinweis 18.11.2026:** Mit ADR 0006–0008 wurde der Umfang deutlich verschlankt (drei Tabellen, keine Migration, Warteliste manuell). Abschnitt 0 und 2 sind aktuell. Die Tabellen in Abschnitt 4 und 5 sind die ursprüngliche Analyse; Punkte, die durch die Verschlankung entfallen, sind dort nicht mehr einzeln nachgezogen.
 
 ## 0. Bereits getroffene Entscheidungen
 
@@ -21,8 +21,8 @@ Stand: 18.11.2026 · Status: **Entwurf, teilweise entschieden – Rest wartet au
 | E-F6 | Eventstatus: findet statt / abgesagt / verschoben. | – |
 | E-F7 | Kein Freitext mehr: Veranstalter = Auswahl aus der Liste `T_Veranstalter` der MV, Kennung `InterneID`. Genau einer je Event (Pflicht). | [datenbankschema.md](datenbankschema.md) |
 | E-F16 | Keine Migration der TEC-Veranstaltungen; Anmeldungen bei Bedarf von Hand. Nur Deutschland. 100–120 Veranstaltungen pro Jahr – schlank halten. | [0006](adr/0006-schlanker-umfang.md) |
-| – | Zwei Tabellen: Veranstaltungen (inkl. Ort, Zusatzfelder als JSON) und Anmeldungen (eine Zeile je Person, Buchungs-ID, Wartelisten-Flag). MV wird gleich aufgebaut. | [0007](adr/0007-zwei-tabellen.md) |
-| E-F9 | Warteliste manuell: kein automatisches Nachrücken, Mitgliederservice entscheidet. Mails nur bei Buchung, Storno, Änderung. | [0008](adr/0008-warteliste-und-mails.md) |
+| – | Drei Tabellen: Veranstaltungen (Zusatzfelder als JSON), Orte (mit Geokoordinaten) und Anmeldungen (eine Zeile je Person, Buchungs-ID, Wartelisten-Flag). MV wird gleich aufgebaut. | [0007](adr/0007-zwei-tabellen.md) |
+| E-F9 | Warteliste manuell: kein automatisches Nachrücken, Mitgliederservice entscheidet. Passt eine Gruppe nicht vollständig, kommt die ganze Buchung auf die Warteliste. Mails nur bei Buchung, Storno, Änderung. | [0008](adr/0008-warteliste-und-mails.md) |
 | E-F17 | Kein Double-Opt-in in V1; Spamschutz über Honeypot und Rate-Limit. | [datenbankschema.md](datenbankschema.md) |
 | Rahmen | Hosting: WordPress, MySQL ist nach Bedarf wählbar. Daher dürfen InnoDB und eine aktuelle MySQL-Version vorausgesetzt werden. | – |
 
@@ -97,13 +97,15 @@ dfk-events/
 │   │   └── Settings.php           Typisierter Zugriff auf Plugin-Optionen
 │   │
 │   ├── Model/                     Fachobjekte – reines PHP, kein WordPress, kein SQL
-│   │   ├── Event.php              Veranstaltung inkl. Ort und Zusatzfeld-Definition
+│   │   ├── Event.php              Veranstaltung inkl. Zusatzfeld-Definition
+│   │   ├── Venue.php              Veranstaltungsort mit Koordinaten
 │   │   ├── Registration.php       Eine Person einer Buchung (Anmelder oder Gast)
 │   │   ├── Booking.php            Zusammenfassung der Registrations einer booking_id
 │   │   └── Enum/                  EventStatus, Format, RegistrationStatus, AttendeeType, FieldType
 │   │
 │   ├── Repository/                Einziger Ort mit SQL
 │   │   ├── EventRepository.php
+│   │   ├── VenueRepository.php
 │   │   └── RegistrationRepository.php
 │   │
 │   ├── Service/                   Geschäftslogik
@@ -125,6 +127,7 @@ dfk-events/
 │   │   │   └── BookingController.php        Formular, Verwaltungslink, Spamschutz
 │   │   ├── Admin/
 │   │   │   ├── EventEditController.php      Metabox: Termin, Ort, Kapazität, Regeln, Zusatzfelder
+│   │   │   ├── VenueController.php          Orte verwalten, Koordinaten prüfen/korrigieren
 │   │   │   └── RegistrationListController.php  Anmeldungen, Warteliste, Nachrücken, Export
 │   │   └── Rest/                       /wp-json/dfk-events/v1/
 │   │       ├── EventsController.php         öffentlich

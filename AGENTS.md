@@ -115,7 +115,8 @@ Beispiele:
 
 Das Datenmodell ist bewusst schlank (100–120 Veranstaltungen pro Jahr):
 
-- `{prefix}dfk_events` – eine Zeile je Veranstaltung, inklusive Ort und Definition der Zusatzfelder
+- `{prefix}dfk_events` – eine Zeile je Veranstaltung, inklusive Definition der Zusatzfelder
+- `{prefix}dfk_venues` – Veranstaltungsorte mit Geokoordinaten
 - `{prefix}dfk_registrations` – eine Zeile je Person, zusammengefasst über eine Buchungs-ID, Warteliste als Flag
 - `{prefix}dfk_mv_sync` – Sync-Bestätigungen der Mitgliederverwaltung
 
@@ -127,9 +128,10 @@ Tabellennamen verwenden den konfigurierten WordPress-Präfix.
 
 ## 6. Veranstaltungsorte
 
-Veranstaltungsorte werden direkt an der Veranstaltung gespeichert (ADR 0007). Beim Anlegen kann ein Ort aus einer früheren Veranstaltung übernommen werden.
+Veranstaltungsorte werden zentral und wiederverwendbar verwaltet (ADR 0007).
 
 Jeder Veranstaltungsort besitzt:
+- Eindeutige ID
 - Name
 - Straße und Hausnummer
 - Postleitzahl
@@ -141,7 +143,7 @@ Koordinaten werden gespeichert und nicht bei jedem Seitenaufruf neu ermittelt.
 
 Online-Veranstaltungen benötigen keinen physischen Veranstaltungsort.
 
-Die gespeicherten Koordinaten dienen auch der späteren DFK-App.
+Die gespeicherten Koordinaten dienen auch der späteren DFK-App und – über die MV – dem Python-Landkartenskript.
 
 ## 7. Anmeldung und Teilnehmer
 
@@ -198,7 +200,7 @@ Eine Wartelistenfunktion ist Bestandteil der ersten Version (ADR 0008).
 - Kein automatisches Nachrücken. Der Mitgliederservice entscheidet im WordPress-Backend oder in der MV, wer nachrückt.
 - Keine Reservierungsfristen.
 - Automatische Mails nur an die anmeldende Person, und nur bei Buchung, Stornierung und Änderung (inklusive Nachrücken).
-- Verhalten bei Gruppenbuchungen, die nicht mehr vollständig passen: Vorschlag in ADR 0008, Freigabe offen.
+- Passt eine Gruppenbuchung nicht mehr vollständig in die freien Plätze, kommt die ganze Buchung auf die Warteliste.
 
 ## 10. Veranstaltungsübersicht
 
