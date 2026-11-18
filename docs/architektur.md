@@ -1,6 +1,8 @@
 # DFK Events – Architekturvorschlag und offene Entscheidungen
 
-Stand: 17.11.2026 · Status: **Entwurf, teilweise entschieden – Rest wartet auf Freigabe durch den Captain**
+Stand: 18.11.2026 · Status: **Entwurf, teilweise entschieden – Rest wartet auf Freigabe durch den Captain**
+
+> **Hinweis 18.11.2026:** Mit ADR 0006–0008 wurde der Umfang deutlich verschlankt (zwei Tabellen, keine Migration, Warteliste manuell). Abschnitt 0 und 2 sind aktuell. Die Tabellen in Abschnitt 4 und 5 sind die ursprüngliche Analyse; Punkte, die durch die Verschlankung entfallen, sind dort nicht mehr einzeln nachgezogen.
 
 ## 0. Bereits getroffene Entscheidungen
 
@@ -18,6 +20,10 @@ Stand: 17.11.2026 · Status: **Entwurf, teilweise entschieden – Rest wartet au
 | E-F5 | Jedes Event gehört genau einem Veranstalter: DFK, Regionalgruppe, Netzwerk (oder Kooperation). Taxonomie `dfk_unit`, Kennung `T_Veranstalter.InterneID` der MV, einmaliger CSV-Import + manuelle Pflege. Reine Online-Events gehören immer dem DFK, hybride dem Veranstalter vor Ort. | [datenbankschema.md](datenbankschema.md) |
 | E-F6 | Eventstatus: findet statt / abgesagt / verschoben. | – |
 | E-F7 | Kein Freitext mehr: Veranstalter = Auswahl aus der Liste `T_Veranstalter` der MV, Kennung `InterneID`. Genau einer je Event (Pflicht). | [datenbankschema.md](datenbankschema.md) |
+| E-F16 | Keine Migration der TEC-Veranstaltungen; Anmeldungen bei Bedarf von Hand. Nur Deutschland. 100–120 Veranstaltungen pro Jahr – schlank halten. | [0006](adr/0006-schlanker-umfang.md) |
+| – | Zwei Tabellen: Veranstaltungen (inkl. Ort, Zusatzfelder als JSON) und Anmeldungen (eine Zeile je Person, Buchungs-ID, Wartelisten-Flag). MV wird gleich aufgebaut. | [0007](adr/0007-zwei-tabellen.md) |
+| E-F9 | Warteliste manuell: kein automatisches Nachrücken, Mitgliederservice entscheidet. Mails nur bei Buchung, Storno, Änderung. | [0008](adr/0008-warteliste-und-mails.md) |
+| E-F17 | Kein Double-Opt-in in V1; Spamschutz über Honeypot und Rate-Limit. | [datenbankschema.md](datenbankschema.md) |
 | Rahmen | Hosting: WordPress, MySQL ist nach Bedarf wählbar. Daher dürfen InnoDB und eine aktuelle MySQL-Version vorausgesetzt werden. | – |
 
 Aus E-F3 ergeben sich die neuen offenen Punkte E-F17 bis E-F20 (Abschnitt 5.1).
@@ -91,103 +97,51 @@ dfk-events/
 │   │   └── Settings.php           Typisierter Zugriff auf Plugin-Optionen
 │   │
 │   ├── Model/                     Fachobjekte – reines PHP, kein WordPress, kein SQL
-│   │   ├── Event.php
-│   │   ├── Location.php
-│   │   ├── Booking.php            Die Buchung (anmeldende Person, Zeitpunkt, Status)
-│   │   ├── Attendee.php           Ein Teilnehmer mit eigener ID und eigenem Status
-│   │   ├── Field.php              Definition eines Zusatzfelds
-│   │   ├── FieldValue.php
-│   │   ├── Enum/
-│   │   │   ├── EventStatus.php        geplant, abgesagt, verschoben … (siehe E-F6)
-│   │   │   ├── BookingStatus.php
-│   │   │   ├── AttendeeStatus.php     bestätigt, Warteliste, storniert, (später: eingecheckt)
-│   │   │   ├── AttendeeType.php       Mitglied, Nichtmitglied
-│   │   │   ├── FieldType.php          Text, Mehrzeilig, Auswahl, Checkbox, Datum
-│   │   │   └── FieldScope.php         Buchung, Teilnehmer
-│   │   └── Value/
-│   │       ├── Coordinates.php
-│   │       ├── Period.php             Beginn/Ende inkl. Zeitzone
-│   │       └── Distance.php
+│   │   ├── Event.php              Veranstaltung inkl. Ort und Zusatzfeld-Definition
+│   │   ├── Registration.php       Eine Person einer Buchung (Anmelder oder Gast)
+│   │   ├── Booking.php            Zusammenfassung der Registrations einer booking_id
+│   │   └── Enum/                  EventStatus, Format, RegistrationStatus, AttendeeType, FieldType
 │   │
 │   ├── Repository/                Einziger Ort mit SQL
 │   │   ├── EventRepository.php
-│   │   ├── LocationRepository.php
-│   │   ├── BookingRepository.php
-│   │   ├── AttendeeRepository.php
-│   │   ├── FieldRepository.php
-│   │   └── FieldValueRepository.php
+│   │   └── RegistrationRepository.php
 │   │
 │   ├── Service/                   Geschäftslogik
-│   │   ├── EventService.php           Anlegen, Ändern, Status, Sichtbarkeit
-│   │   ├── EventQueryService.php      Übersicht: Zeitraum, Regionalgruppe, Umkreis, Sortierung
-│   │   ├── BookingService.php         Buchen und Stornieren, transaktional
-│   │   ├── BookingRules.php           Teilnehmerarten, max. Personen/Buchung, Fristen, Mehrfachanmeldung
-│   │   ├── CapacityService.php        Freie Plätze, Überbuchungsschutz
-│   │   ├── AttendeeService.php        Teilnehmerverwaltung, Einzelstorno
-│   │   ├── BookingAccessService.php   Verwaltungslink per Token für Buchungen ohne Konto (E-F18)
-│   │   ├── PrefillService.php         Formular-Vorbelegung aus dem WP-Konto
-│   │   ├── AbuseProtection.php        Rate-Limit, Honeypot, ggf. Bestätigung (E-F17)
-│   │   ├── WaitlistService.php        Schnittstelle steht, Regeln erst nach Freigabe (E-F9)
-│   │   ├── FormService.php            Zusatzfelder definieren und Werte validieren
-│   │   ├── NotificationService.php    E-Mails (Bestätigung, Storno, Warteliste)
-│   │   ├── CalendarExportService.php  iCal (.ics)
-│   │   ├── PrivacyService.php         Löschfristen, Auskunft, Löschung
-│   │   └── Geo/
-│   │       ├── DistanceCalculator.php     Luftlinie (Haversine)
-│   │       ├── Geocoder.php               Interface
-│   │       └── …Geocoder.php              Konkreter Anbieter, siehe E-T6
+│   │   ├── EventService.php           Anlegen, Ändern, Übersicht/Filter, Regel „online → DFK“
+│   │   ├── BookingService.php         Buchen, Stornieren, Ändern, Nachrücken; Kapazität, Warteliste, Token
+│   │   ├── FormService.php            Zusatzfelder validieren, sensible Werte verschlüsseln
+│   │   ├── NotificationService.php    Mails bei Buchung, Storno, Änderung (ADR 0008)
+│   │   ├── GeoService.php             Geocoding beim Speichern, Luftlinie, Umkreis
+│   │   ├── IcsService.php             Kalenderexport
+│   │   └── PurgeService.php           Bereinigung nach MV-Sync bzw. 30 Tagen (ADR 0005)
 │   │
-│   ├── Validation/                Gemeinsame Eingabeprüfung für Formular und REST
-│   │   ├── Validator.php
-│   │   ├── BookingRequest.php         Geprüfte, typisierte Buchungsanfrage
-│   │   └── EventQuery.php             Geprüfte Filterparameter der Übersicht
+│   ├── Validation/
+│   │   └── BookingRequest.php     Geprüfte Buchungsanfrage, gemeinsam für Formular und REST
 │   │
 │   ├── Controller/
 │   │   ├── Frontend/
-│   │   │   ├── EventArchiveController.php   Übersicht /events/
-│   │   │   ├── EventSingleController.php    Detailseite /event/<slug>/
-│   │   │   └── BookingFormController.php    Formularversand (admin-post bzw. REST)
+│   │   │   ├── EventListController.php      Übersicht
+│   │   │   ├── EventDetailController.php    Detailseite /event/<slug>/
+│   │   │   └── BookingController.php        Formular, Verwaltungslink, Spamschutz
 │   │   ├── Admin/
-│   │   │   ├── EventMetaBoxController.php   Termine, Ort, Kapazität, Regeln am Event
-│   │   │   ├── FieldEditorController.php    Zusatzfelder je Event
-│   │   │   ├── LocationController.php       Veranstaltungsorte verwalten
-│   │   │   ├── BookingListController.php    Buchungen/Teilnehmer, Export
-│   │   │   └── SettingsController.php
+│   │   │   ├── EventEditController.php      Metabox: Termin, Ort, Kapazität, Regeln, Zusatzfelder
+│   │   │   └── RegistrationListController.php  Anmeldungen, Warteliste, Nachrücken, Export
 │   │   └── Rest/                       /wp-json/dfk-events/v1/
-│   │       ├── RestController.php           Basis: Permission-Callbacks, Fehlerformat
 │   │       ├── EventsController.php         öffentlich
-│   │       ├── LocationsController.php      öffentlich
-│   │       ├── BookingsController.php       Anlegen öffentlich (ohne Login, mit Missbrauchsschutz),
-│   │       │                                Verwalten per Login oder Token
-│   │       ├── AttendeesController.php      geschützt, rollenabhängig
-│   │       ├── MeController.php             geschützt: eigene Buchungen eingeloggter Nutzer
-│   │       └── CrmExportController.php      geschützt: Abholung durch CRM + Übernahmebestätigung (ADR 0005)
+│   │       └── BookingsController.php       Anlegen öffentlich, Verwalten per Login oder Token
 │   │
 │   ├── View/
-│   │   ├── Renderer.php           Lädt Templates, erlaubt Override im Child-Theme
-│   │   └── ViewModel/             Fertig aufbereitete Daten für Templates
-│   │       ├── EventCardView.php
-│   │       ├── EventDetailView.php
-│   │       └── BookingFormView.php
+│   │   └── Renderer.php           Lädt Templates, erlaubt Override im Child-Theme
 │   │
-│   ├── Integration/               WordPress- und Drittanbieter-Anbindung, keine Geschäftslogik
+│   ├── Integration/               WordPress-Anbindung, keine Geschäftslogik
 │   │   ├── EventPostType.php          CPT dfk_event, Rewrite /event/
-│   │   ├── UnitTaxonomy.php           Taxonomie dfk_unit (DFK / Regionalgruppe / Netzwerk)
-│   │   ├── PostSync.php               Hält CPT und Tabelle dfk_events konsistent (E-T5)
+│   │   ├── UnitTaxonomy.php           Taxonomie dfk_unit (Veranstalter)
 │   │   ├── TemplateLoader.php         template_include, unabhängig von Elementor
-│   │   ├── RankMath.php               Event-Schema/Meta ohne doppelte Ausgabe
-│   │   ├── WpMembers.php              Beantwortet „Ist dieser Nutzer DFK-Mitglied?“ (E-F4)
-│   │   ├── PrivacyHooks.php           WordPress-Export/-Löschung personenbezogener Daten
-│   │   └── Cron.php                   Löschfristen, Erinnerungen
+│   │   └── Cron.php                   tägliche Bereinigung
 │   │
-│   ├── Database/
-│   │   ├── Migrator.php           Versionierte Migrationen, Option dfk_events_db_version
-│   │   ├── Migrations/            M0001_CreateTables.php, M0002_… (nach Schemafreigabe)
-│   │   └── Transaction.php        START TRANSACTION / COMMIT / ROLLBACK um $wpdb
-│   │
-│   └── Support/
-│       ├── Clock.php              Austauschbare Zeitquelle (testbar)
-│       └── Logger.php             Protokolliert ohne personenbezogene Daten
+│   └── Database/
+│       ├── Migrator.php           Versionierte Migrationen inkl. MV-Views
+│       └── Transaction.php        START TRANSACTION / COMMIT / ROLLBACK um $wpdb
 │
 ├── templates/                     Views – überschreibbar unter <child-theme>/dfk-events/
 │   ├── archive-event.php

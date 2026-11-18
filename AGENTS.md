@@ -111,32 +111,29 @@ Beispiele:
 - Teilnehmerkreis
 - Buchungsregeln
 
-### Vorgesehene Tabellen
+### Tabellen (ADR 0007)
 
-- `{prefix}dfk_events`
-- `{prefix}dfk_event_locations`
-- `{prefix}dfk_event_bookings`
-- `{prefix}dfk_event_attendees`
-- `{prefix}dfk_event_fields`
-- `{prefix}dfk_event_field_values`
+Das Datenmodell ist bewusst schlank (100–120 Veranstaltungen pro Jahr):
 
-Für die spätere Check-in-Funktion ist zusätzlich eine Tabelle für Check-in-Daten vorgesehen.
+- `{prefix}dfk_events` – eine Zeile je Veranstaltung, inklusive Ort und Definition der Zusatzfelder
+- `{prefix}dfk_registrations` – eine Zeile je Person, zusammengefasst über eine Buchungs-ID, Warteliste als Flag
+- `{prefix}dfk_mv_sync` – Sync-Bestätigungen der Mitgliederverwaltung
 
-Das endgültige Datenbankschema muss vor der Implementierung spezifiziert und freigegeben werden.
+Für die spätere Check-in-Funktion kann eine weitere Tabelle ergänzt werden.
+
+Das Datenbankschema ist in `docs/datenbankschema.md` spezifiziert und muss vor der Implementierung freigegeben werden.
 
 Tabellennamen verwenden den konfigurierten WordPress-Präfix.
 
 ## 6. Veranstaltungsorte
 
-Veranstaltungsorte werden zentral und wiederverwendbar verwaltet.
+Veranstaltungsorte werden direkt an der Veranstaltung gespeichert (ADR 0007). Beim Anlegen kann ein Ort aus einer früheren Veranstaltung übernommen werden.
 
 Jeder Veranstaltungsort besitzt:
-- Eindeutige ID
 - Name
 - Straße und Hausnummer
 - Postleitzahl
 - Ort
-- Land
 - Breitengrad
 - Längengrad
 
@@ -195,17 +192,13 @@ Besonders sensible Zusatzinformationen dürfen nicht ohne ausdrückliche fachlic
 
 ## 9. Wartelisten
 
-Eine Wartelistenfunktion ist Bestandteil der ersten Version.
+Eine Wartelistenfunktion ist Bestandteil der ersten Version (ADR 0008).
 
-Die Architektur muss Mehrfachanmeldungen und individuelle Teilnehmerstatus berücksichtigen.
-
-Noch festzulegen:
-- Automatisches oder manuelles Nachrücken
-- Verhalten bei Gruppenbuchungen
-- Reservierungsfristen
-- Benachrichtigungen
-
-Diese Regeln dürfen nicht ohne vorherige Freigabe fest implementiert werden.
+- Warteliste als Flag an der Anmeldung, keine eigene Tabelle.
+- Kein automatisches Nachrücken. Der Mitgliederservice entscheidet im WordPress-Backend oder in der MV, wer nachrückt.
+- Keine Reservierungsfristen.
+- Automatische Mails nur an die anmeldende Person, und nur bei Buchung, Stornierung und Änderung (inklusive Nachrücken).
+- Verhalten bei Gruppenbuchungen, die nicht mehr vollständig passen: Vorschlag in ADR 0008, Freigabe offen.
 
 ## 10. Veranstaltungsübersicht
 
@@ -214,7 +207,7 @@ Die öffentliche Veranstaltungsübersicht muss vollständig responsiv sein.
 Anforderungen:
 - Chronologische Sortierung
 - Filter nach Zeitraum
-- Filter nach Regionalgruppe
+- Filter nach Veranstalter (Regionalgruppe, Netzwerk, DFK)
 - Filter nach Entfernung
 - Veranstaltungsstatus
 - Bildbasierte Kartenansicht
@@ -253,7 +246,7 @@ Darstellung von:
 
 Die Anmeldung muss auch auf Smartphones komfortabel funktionieren.
 
-Bestehende Veranstaltungs-URLs unter `/event/` sollen bei der Migration möglichst erhalten bleiben.
+Neue Veranstaltungen verwenden URLs unter `/event/`. Bestehende Veranstaltungen werden nicht migriert (ADR 0006).
 
 ## 12. WordPress-Integration
 
@@ -341,11 +334,14 @@ Keine eigenmächtigen Pushes, Deployments oder Datenbankänderungen ohne Freigab
 
 **Phase: Architektur und Anforderungsdefinition**
 
+Entscheidungen sind in `docs/architektur.md` (Abschnitt 0) und `docs/adr/` dokumentiert.
+
 Noch nicht freigegeben:
-- Datenbankschema
+- Datenbankschema (Entwurf: `docs/datenbankschema.md`)
 - Vollständige API-Spezifikation
 - Implementierung der Geschäftslogik
-- Migration der bisherigen Veranstaltungen und Anmeldungen
+
+Eine Migration der bisherigen Veranstaltungen findet nicht statt (ADR 0006).
 
 ### Erster Arbeitsauftrag an Ensign Codex
 

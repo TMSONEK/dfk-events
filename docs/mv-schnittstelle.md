@@ -49,7 +49,7 @@ Inkrementell: Es werden nur Datensätze mit `post_modified >= T_Konstanten.DatTe
 
 ### Variante A – Datenbank-Views als Vertrag (Empfehlung für V1)
 
-- DFK Events legt versionierte, nur lesbare **Views** an, z. B. `{prefix}dfk_mv_events_v1` und `{prefix}dfk_mv_attendees_v1`, mit flachen Spalten, die sich an `T_Termine` / `T_Termine_Anmeldungen` orientieren (inkl. `booking_id`, `is_booker` → H/B, `updated_at`).
+- DFK Events legt versionierte, nur lesbare **Views** an: `{prefix}dfk_mv_veranstaltungen_v1` und `{prefix}dfk_mv_anmeldungen_v1`. Sie bilden die künftigen MV-Tabellen `T_Veranstaltungen` / `T_Veranstaltungen_Anmeldungen` nahezu 1:1 ab (ADR 0007, Spalten in [datenbankschema.md](datenbankschema.md)).
 - Die MV bekommt einen **eigenen MySQL-Benutzer mit `SELECT` nur auf diese Views** – kein Zugriff mehr auf `wp_posts`, `wp_users` usw.
 - Interne Tabellen können sich ändern, solange die Views stabil bleiben. Eine neue Version erhält eine neue View (`_v2`).
 - **Vorteil:** Die MV behält ihren ODBC-Weg, die Anpassung in VBA ist klein. Kein PHP-serialisiertes Parsen mehr.
