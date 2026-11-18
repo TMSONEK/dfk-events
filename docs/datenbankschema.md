@@ -59,7 +59,7 @@ Taxonomie dfk_unit                    Veranstalter (aus MV T_Veranstalter)
 | `purged_at` | DATETIME NULL | Zeitpunkt der Bereinigung |
 | `created_at`, `updated_at` | DATETIME NOT NULL | |
 
-Index: `(starts_at)`. Der Veranstalter hängt als Taxonomie-Term am Beitrag (3.6).
+Index: `(starts_at)`. Der Veranstalter hängt als Taxonomie-Term am Beitrag (3.7).
 
 ### 3.2 `wp_dfk_venues` – Veranstaltungsorte
 
@@ -136,7 +136,7 @@ Regeln (freigegeben 18.11.2026):
 
 Ein täglicher Cron löscht alle Anmeldungen von Veranstaltungen, deren Ende mehr als **30 Tage** zurückliegt, und setzt `purged_at` (ADR 0005). Keine eigene Tabelle, keine Bestätigung durch die MV.
 
-### 3.7 `wp_dfk_settings` – Texte und Einstellungen (ADR 0010, Vorschlag)
+### 3.6 `wp_dfk_settings` – Texte und Einstellungen (ADR 0010, Vorschlag)
 
 | Spalte | Typ | Bemerkung |
 |---|---|---|
@@ -146,7 +146,7 @@ Ein täglicher Cron löscht alle Anmeldungen von Veranstaltungen, deren Ende meh
 
 Startwerte per Migration; Pflege über das CRM (`UPDATE` nur auf `value`).
 
-### 3.6 Veranstalter – Taxonomie `dfk_unit`
+### 3.7 Veranstalter – Taxonomie `dfk_unit`
 
 Jede Veranstaltung hat genau einen Veranstalter aus der MV-Liste `T_Veranstalter` (einmaliger CSV-Import, danach Pflege im WP-Admin).
 
