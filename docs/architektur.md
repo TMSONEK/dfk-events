@@ -26,6 +26,7 @@ Stand: 18.11.2026 · Status: **Entwurf, teilweise entschieden – Rest wartet au
 | – | **Vorschlag:** MV schreibt Namenskorrekturen, Mitgliedsnummer und geprüften Status direkt in die Anmeldungen zurück (spaltengenaue MySQL-Rechte). | [0009](adr/0009-rueckschreiben-mv.md) |
 | – | Die App bucht über die WordPress-Seite (reduzierte Anmeldeseite, Prüfung am Prototyp), keine Schreib-API. Termine liest das App-Backend über **einen** öffentlichen, nur lesenden und abgesicherten Endpunkt `GET /wp-json/dfk-events/v1/events`. | [app-anbindung.md](app-anbindung.md) |
 | E-F17 | Kein Double-Opt-in in V1; Spamschutz über Honeypot und Rate-Limit. | [datenbankschema.md](datenbankschema.md) |
+| E-T1/E-T6 | PHP 8.1; Geocoding der Orte automatisch über Nominatim, manuell korrigierbar; Testumgebung: Staging bei Mittwald. Offene Restpunkte: [offene-punkte.md](offene-punkte.md). | – |
 | Rahmen | Hosting: WordPress, MySQL ist nach Bedarf wählbar. Daher dürfen InnoDB und eine aktuelle MySQL-Version vorausgesetzt werden. | – |
 
 Aus E-F3 ergeben sich die neuen offenen Punkte E-F17 bis E-F20 (Abschnitt 5.1).

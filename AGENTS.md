@@ -343,7 +343,8 @@ Freigegeben:
 
 Noch nicht freigegeben:
 - ADR 0009 (Rückschreiben der MV)
-- Implementierung der Geschäftslogik (Umsetzungsplan folgt)
+- Restliche Konzeptpunkte: `docs/offene-punkte.md`
+- Implementierung: **Kein Anwendungscode, bis das Konzept abgeschlossen ist** (Captain, 18.11.2026). Danach Umsetzung, Testumgebung Staging bei Mittwald, PHP 8.1.
 
 Eine Migration der bisherigen Veranstaltungen findet nicht statt (ADR 0006).
 
