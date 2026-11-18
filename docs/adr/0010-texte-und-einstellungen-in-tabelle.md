@@ -1,12 +1,12 @@
 # ADR 0010 – Texte und Einstellungen in einer Tabelle, pflegbar über das CRM
 
-Datum: 18.11.2026 · Status: **Vorschlag, wartet auf Freigabe** (Anregung Captain)
+Datum: 18.11.2026 · Status: **Angenommen** (Captain, 18.11.2026)
 
 ## Kontext
 
 Die automatischen Mails sollen als reine Text-Templates starten und ändern sich selten. Der Captain möchte Pflegeaufgaben möglichst in das CRM (die MV) verlagern, statt sie im WordPress-Backend zu bauen.
 
-## Vorschlag
+## Entscheidung
 
 Eine kleine Schlüssel-Wert-Tabelle `wp_dfk_settings` enthält **alle** Texte und Einstellungen des Plugins:
 

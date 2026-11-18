@@ -119,6 +119,7 @@ Das Datenmodell ist bewusst schlank (100–120 Veranstaltungen pro Jahr):
 
 - `{prefix}dfk_events` – eine Zeile je Veranstaltung, inklusive Definition der Zusatzfelder
 - `{prefix}dfk_venues` – Veranstaltungsorte mit Geokoordinaten
+- `{prefix}dfk_settings` – Texte und Einstellungen (Mailtexte, Absender, Hinweise), pflegbar über das CRM (ADR 0010)
 - `{prefix}dfk_registrations` – eine Zeile je Person, zusammengefasst über eine Buchungs-ID, Warteliste als Flag
 
 Für die spätere Check-in-Funktion kann eine weitere Tabelle ergänzt werden.

@@ -136,7 +136,7 @@ Regeln (freigegeben 18.11.2026):
 
 Ein täglicher Cron löscht alle Anmeldungen von Veranstaltungen, deren Ende mehr als **30 Tage** zurückliegt, und setzt `purged_at` (ADR 0005). Keine eigene Tabelle, keine Bestätigung durch die MV.
 
-### 3.6 `wp_dfk_settings` – Texte und Einstellungen (ADR 0010, Vorschlag)
+### 3.6 `wp_dfk_settings` – Texte und Einstellungen (ADR 0010)
 
 | Spalte | Typ | Bemerkung |
 |---|---|---|
