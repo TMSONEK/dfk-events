@@ -8,6 +8,8 @@ Das Plugin ersetzt langfristig The Events Calendar Pro und Event Tickets Plus au
 
 Das System soll schlank, performant, sicher, responsiv und langfristig wartbar sein.
 
+Das Plugin wird ausschließlich intern vom DFK genutzt (kein kommerzielles oder öffentlich verteiltes Plugin): nur Deutsch, DFK-Besonderheiten dürfen fest eingebaut sein, keine Konfigurierbarkeit „für alle Fälle“ (ADR 0006).
+
 Die Entwicklung erfolgt zunächst für die Testumgebung `dev.dfk.eu`.
 
 **Projektziel:** Produktivsetzung bis Ende Dezember 2026, vorbehaltlich erfolgreicher Tests und Datenmigration.
@@ -158,7 +160,7 @@ Die anmeldende Person und die tatsächlichen Teilnehmer sind unterschiedliche En
 - Mehrfachanmeldungen können pro Veranstaltung aktiviert oder deaktiviert werden.
 - Maximale Teilnehmerzahl je Buchung ist konfigurierbar.
 - Jeder Teilnehmer besitzt eine eindeutige ID und einen eigenen Status.
-- Einzelne Teilnehmer können storniert werden – in V1 nur durch den Mitgliederservice, keine Selbst-Stornierung.
+- Einzelne Teilnehmer können storniert werden – in V1 nur durch den Mitgliederservice im WordPress-Backend, keine Selbst-Stornierung. Später auch aus der MV.
 - Kapazitäten werden anhand der Teilnehmer und nicht anhand der Buchungen berechnet.
 - Gleichzeitige Buchungen dürfen keine Überbuchungen verursachen.
 
@@ -261,7 +263,7 @@ Das Plugin muss mit der bestehenden DFK-Umgebung zusammenarbeiten:
 
 Das Plugin darf für seine Kernfunktionen nicht von Elementor abhängig sein.
 
-Die Darstellung erfolgt über eigene Templates. Zusätzlich muss die Gestaltung mit Elementor möglich sein (Shortcodes für Übersicht, Details und Anmeldeformular; Elementor-Vorlagen haben Vorrang vor Plugin-Templates). Das bisherige Erscheinungsbild der Übersicht soll möglichst erhalten bleiben.
+Die Darstellung erfolgt über eigene Templates. Das bisherige Erscheinungsbild soll möglichst erhalten bleiben (`docs/erscheinungsbild.md`). In Schritt 2 folgen Shortcodes für Übersicht, Details und Anmeldeformular, damit auch mit Elementor gestaltet werden kann; zur Not wird HTML in einem Elementor-Container eingebunden.
 
 Nur WordPress-Administratoren legen Veranstaltungen an und sehen Anmeldungen.
 
@@ -344,7 +346,7 @@ Freigegeben:
 - REST: nur ein öffentlicher, lesender Endpunkt für die App (`docs/app-anbindung.md`), keine Schreib-API
 
 Noch nicht freigegeben:
-- Restliche Konzeptpunkte O1–O4: `docs/offene-punkte.md`
+- Restliche Konzeptpunkte O5–O7: `docs/offene-punkte.md`
 - Implementierung: **Kein Anwendungscode, bis das Konzept abgeschlossen ist** (Captain, 18.11.2026). Danach Umsetzung, Testumgebung Staging bei Mittwald, PHP 8.1.
 
 Eine Migration der bisherigen Veranstaltungen findet nicht statt (ADR 0006).

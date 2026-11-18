@@ -46,7 +46,6 @@ Taxonomie dfk_unit                    Veranstalter (aus MV T_Veranstalter)
 | `status` | VARCHAR(20) NOT NULL DEFAULT 'scheduled' | `scheduled`, `cancelled`, `postponed` |
 | `format` | VARCHAR(10) NOT NULL DEFAULT 'onsite' | `onsite`, `online`, `hybrid` |
 | `venue_id` | BIGINT UNSIGNED NULL | → `wp_dfk_venues.id`; NULL bei reinen Online-Veranstaltungen |
-| `online_url` | VARCHAR(2048) NULL | nur für angemeldete Teilnehmer sichtbar |
 | `registration_enabled` | TINYINT(1) NOT NULL DEFAULT 1 | |
 | `registration_closes_at` | DATETIME NULL | Anmeldeschluss |
 | `capacity` | INT UNSIGNED NULL | NULL = unbegrenzt |

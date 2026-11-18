@@ -138,7 +138,7 @@ dfk-events/
 │   │       └── BookingsController.php       Anlegen öffentlich, Verwalten per Login oder Token
 │   │
 │   ├── View/
-│   │   └── Renderer.php           Lädt Templates, erlaubt Override im Child-Theme
+│   │   └── Renderer.php           Lädt die Plugin-Templates (kein Child-Theme-Override, nur interne Nutzung)
 │   │
 │   ├── Integration/               WordPress-Anbindung, keine Geschäftslogik
 │   │   ├── EventPostType.php          CPT dfk_event, Rewrite /event/

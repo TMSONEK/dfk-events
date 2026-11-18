@@ -33,21 +33,30 @@ Stand: 18.11.2026 · Reihenfolge: Konzept fertigstellen → andere laufende Proj
 | B2 | Buchen ohne REST | Normaler Formularversand über `admin-post.php`, funktioniert auch ohne JavaScript |
 | B3 | Seiten-Cache | Anmeldeformular und freie Plätze vom Cache ausnehmen bzw. per `admin-ajax.php` nachladen – **welches Caching aktiv ist, noch klären** |
 | B4 | Rank Math | Plugin liefert Titel/Beschreibung; Event-Schema nur einmal ausgeben |
-| B5 | Elementor | Kernfunktionen bleiben unabhängig von Elementor (AGENTS.md §12): Das Plugin bringt eigene Templates mit. Zusätzlich gibt es **Shortcodes** (z. B. `[dfk_events]` für die Übersicht, `[dfk_event_booking]` für das Anmeldeformular, `[dfk_event_details]`), die in Elementor-Seiten und Theme-Builder-Vorlagen eingesetzt werden können. Eine Elementor-Vorlage für `dfk_event` hat Vorrang vor dem Plugin-Template |
+| B5 | Elementor | Kernfunktionen bleiben unabhängig von Elementor (AGENTS.md §12): Das Plugin bringt eigene Templates mit. **In Schritt 2** kommen **Shortcodes** dazu (z. B. `[dfk_events]` für die Übersicht, `[dfk_event_booking]` für das Anmeldeformular, `[dfk_event_details]`), die in Elementor-Seiten und Theme-Builder-Vorlagen eingesetzt werden können. Eine Elementor-Vorlage für `dfk_event` hat Vorrang vor dem Plugin-Template |
 | B6 | Admin-Oberfläche | Klassische Metaboxen, kein React |
 | B7 | Tests | PHPUnit (Unit-Tests ohne WordPress für Buchungsregeln), PHPCS mit WordPress Coding Standards |
 | B8 | Logging | Schlanker Logger auf Basis `error_log`, ohne personenbezogene Daten |
 | B9 | Paralleler Betrieb mit TEC auf Staging | Während der Entwicklung Slug `/dfk-event/`, Umstellung auf `/event/` beim Go-live |
 | B10 | Deployment auf Staging | Per GitHub Actions bei Push auf einen festgelegten Branch (wie DFK-App); kein eigenständiges Deployment durch den Coding Agent |
 
+### Nachträge (18.11.2026)
+
+| # | Thema | Entscheidung |
+|---|---|---|
+| O1 | Wo storniert der Mitgliederservice? | **V1: in der Anmeldeliste im WordPress-Backend** (Platz wird frei, Stornomail geht raus). **Später zusätzlich aus der MV/dem CRM** – dann wird ADR 0009 um den Anmeldestatus erweitert |
+| O2 | Online-Zugang (z. B. Zoom-Link) | **Nicht im Plugin.** Der Zugang wird manuell per Mail verschickt; eine Zoom-Anbindung ist für später angedacht, aber offen. Das Feld `online_url` entfällt |
+| O3 | Bisheriges Erscheinungsbild | Screenshots ausgewertet: [erscheinungsbild.md](erscheinungsbild.md) |
+| O4 | Seiten-Caching | Derzeit nur minimal aktiv, wird vom Captain überarbeitet. Das Plugin geht davon aus, dass Seiten gecacht werden können (Formular und freie Plätze werden dynamisch geladen, B3) |
+| B5 | Elementor | **Präzisiert:** V1 mit eigenen Templates; **Shortcodes in Schritt 2**. Zur Not wird HTML in einem Elementor-Container eingebunden |
+
 ## Noch offen
 
-| # | Frage | Hinweis |
+| # | Frage | Empfehlung |
 |---|---|---|
-| O1 | **Wo storniert der Mitgliederservice?** | Empfehlung: in der Anmeldeliste im WordPress-Backend. Dort wird der Platz frei, die Stornomail geht raus und die MV sieht den Status über die View. Alternative: Storno in der MV, dann bräuchte die MV zusätzlich Schreibrecht auf den Anmeldestatus – ohne Mail und ohne Prüfung |
-| O2 | **Online-Zugangslink** | Optionen: (a) nur in der Bestätigungsmail, (b) öffentlich auf der Veranstaltungsseite, (c) vom Mitgliederservice kurz vor dem Termin per Mail an alle Angemeldeten. Wie wird es heute gemacht? |
-| O3 | **Bisheriges Erscheinungsbild der Übersicht** | Screenshots oder Link der heutigen Übersicht und Detailseite als Vorlage |
-| O4 | **Seiten-Caching auf dfk.eu** (B3) | Welches Plugin bzw. welcher Server-Cache ist aktiv? |
+| O5 | Google-Karte auf der Detailseite (lädt ohne Einwilligung Inhalte von Google) | Link „In Google Maps öffnen“ statt Einbettung, oder Karte erst nach Klick |
+| O6 | Foto-/Film-Hinweis, heute in jeder Beschreibung kopiert | Einmal als Einstellung, automatisch unter jeder Veranstaltung und im Formular; pro Veranstaltung abschaltbar |
+| O7 | E-Mail in der Box „Veranstalter“ | Optionale E-Mail je Veranstalter, sonst zentrale Adresse aus den Einstellungen |
 
 ## C. Für die MV-Seite (separates Projekt)
 
