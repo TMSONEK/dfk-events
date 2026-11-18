@@ -118,7 +118,6 @@ Das Datenmodell ist bewusst schlank (100–120 Veranstaltungen pro Jahr):
 - `{prefix}dfk_events` – eine Zeile je Veranstaltung, inklusive Definition der Zusatzfelder
 - `{prefix}dfk_venues` – Veranstaltungsorte mit Geokoordinaten
 - `{prefix}dfk_registrations` – eine Zeile je Person, zusammengefasst über eine Buchungs-ID, Warteliste als Flag
-- `{prefix}dfk_mv_sync` – Sync-Bestätigungen der Mitgliederverwaltung
 
 Für die spätere Check-in-Funktion kann eine weitere Tabelle ergänzt werden.
 

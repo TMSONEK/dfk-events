@@ -15,8 +15,8 @@ Stand: 18.11.2026 · Status: **Entwurf, teilweise entschieden – Rest wartet au
 | E-F21 | Pflichtfelder je Teilnehmer: Vorname, Nachname, Mitglied/Nichtmitglied, E-Mail. Weitere Felder optional pro Event. | [0004](adr/0004-anmeldende-person-und-teilnehmer.md) |
 | E-F23 | Bestätigungsmail vorerst nur an die anmeldende Person, mit Liste aller angemeldeten Personen. | – |
 | E-F24 | Zusatzfelder können als „sensibel“ markiert werden (eingeschränkte Sichtbarkeit, verschlüsselt, nicht in API/Mails/Logs, automatische Löschung). | – |
-| E-F15 | Personenbezogene Daten werden nach Übernahme ins CRM gelöscht, normalerweise direkt nach der Veranstaltung, spätestens 30 Tage danach. | [0005](adr/0005-datenlebenszyklus-crm.md) |
-| E-F26/27 | Schnittstelle zur MV: versionierte DB-Views mit eingeschränktem MySQL-Benutzer; MV bestätigt Sync per Zeitstempel, danach Bereinigung. | [mv-schnittstelle.md](mv-schnittstelle.md) |
+| E-F15 | Alle Anmeldungen einer Veranstaltung werden **30 Tage nach dem Veranstaltungstermin** (Ende der Veranstaltung, nicht Anmeldedatum) automatisch gelöscht. Die MV gleicht vorher ab. | [0005](adr/0005-datenlebenszyklus-crm.md) |
+| E-F26/27 | Schnittstelle zur MV: versionierte DB-Views mit eingeschränktem MySQL-Benutzer; keine Sync-Bestätigung, Bereinigung nach fester Frist. | [mv-schnittstelle.md](mv-schnittstelle.md) |
 | E-F5 | Jedes Event gehört genau einem Veranstalter: DFK, Regionalgruppe, Netzwerk (oder Kooperation). Taxonomie `dfk_unit`, Kennung `T_Veranstalter.InterneID` der MV, einmaliger CSV-Import + manuelle Pflege. Reine Online-Events gehören immer dem DFK, hybride dem Veranstalter vor Ort. | [datenbankschema.md](datenbankschema.md) |
 | E-F6 | Eventstatus: findet statt / abgesagt / verschoben. | – |
 | E-F7 | Kein Freitext mehr: Veranstalter = Auswahl aus der Liste `T_Veranstalter` der MV, Kennung `InterneID`. Genau einer je Event (Pflicht). | [datenbankschema.md](datenbankschema.md) |
@@ -264,10 +264,10 @@ Jede Entscheidung erhält eine ID. Freigegebene Entscheidungen werden als eigene
 | E-F12 | Rollen und Rechte (W12) | nur Admins / Redakteure / Regionalgruppen-Verantwortliche mit eingeschränkten Rechten | Eigene Capabilities von Anfang an, Zuordnung zu Rollen konfigurierbar |
 | E-F13 | Online-Zugangslink (W5) | öffentlich / nur für bestätigte Teilnehmer | Nur für bestätigte Teilnehmer (Mail + „Meine Buchungen“) |
 | E-F14 | Was passiert bei Deinstallation? | alles löschen / Daten behalten | Daten standardmäßig behalten, Löschen nur per ausdrücklicher Einstellung |
-| E-F15 | Löschfristen (W14) | – | ✅ **Entschieden:** Löschung nach Übernahme ins CRM, spätestens 30 Tage nach Eventende (ADR 0005) |
+| E-F15 | Löschfristen (W14) | – | ✅ **Entschieden:** Löschung 30 Tage nach dem Veranstaltungstermin (ADR 0005) |
 | E-F25 | Welches CRM übernimmt die Daten? | – | ✅ **Geklärt:** DFK-Mitgliederverwaltung (Eigenentwicklung, Access + SQL Server). Ist-Analyse: [mv-schnittstelle.md](mv-schnittstelle.md) |
 | E-F26 | Wie übernimmt die MV die Daten? | – | ✅ **Entschieden: A für V1** (MV liest heute schon per MySQL-ODBC), B mit der .NET-MV ab 2027. Details: [mv-schnittstelle.md](mv-schnittstelle.md) |
-| E-F27 | Wer löst die Löschung aus? | – | ✅ **Entschieden: MV schreibt Sync-Zeitstempel** in `{prefix}dfk_mv_sync` → Bereinigung beendeter Events; 30-Tage-Frist als Sicherheitsnetz |
+| E-F27 | Wer löst die Löschung aus? | – | ✅ **Entschieden (18.11.2026): nur die Frist** – Bereinigung 30 Tage nach Veranstaltungsende, keine Sync-Bestätigung |
 | E-F28 | Umfang der Löschung | – | ✅ **Entschieden:** alle personenbezogenen Buchungsdaten (anmeldende Person, Teilnehmer, Zusatzfelder) vollständig löschen. Keine Statistik im Plugin – Auswertungen macht die MV-Software |
 | E-F16 | Migration | welche Daten aus TEC/ETP übernehmen (vergangene Events? alte Anmeldungen?) | Separates Migrationskonzept; alte Anmeldungen nur, soweit Löschfristen es erlauben |
 | E-F17 | Bestätigung und Missbrauchsschutz bei Buchung ohne Login | (a) sofort bestätigt + Mail / (b) Double-Opt-in: Platz vorläufig reserviert, verfällt ohne Klick / (c) pro Event wählbar | **(a) als Standard** mit Honeypot, Rate-Limit je IP/E-Mail und Plausibilitätsprüfungen; **(b) pro Event zuschaltbar**, z. B. bei knappen Plätzen. Ein CAPTCHA nur, falls nötig (externer Dienst, Datenschutz) |

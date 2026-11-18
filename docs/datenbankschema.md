@@ -30,7 +30,6 @@ wp_dfk_events                         eine Zeile je Veranstaltung  ≙ MV T_Vera
 wp_dfk_registrations                  eine Zeile je Person          ≙ MV T_Veranstaltungen_Anmeldungen
                                       zusammengefasst über booking_id
 
-wp_dfk_mv_sync                        Sync-Bestätigungen der MV
 Taxonomie dfk_unit                    Veranstalter (aus MV T_Veranstalter)
 ```
 
@@ -126,15 +125,9 @@ Definition in `wp_dfk_events.extra_fields`:
 
 Werte in `wp_dfk_registrations.extra_values` als `{ "ausweis": "<verschlüsselt>", "essen": "Vegetarisch" }`. Felder mit `scope = booking` stehen nur in der Anmelderzeile.
 
-### 3.5 `wp_dfk_mv_sync`
+### 3.5 Bereinigung
 
-| Spalte | Typ | Bemerkung |
-|---|---|---|
-| `id` | BIGINT UNSIGNED **PK** AUTO_INCREMENT | |
-| `synced_at` | DATETIME NOT NULL | Zeitpunkt des erfolgreichen MV-Laufs |
-| `records` | INT UNSIGNED NULL | Anzahl übernommener Anmeldungen |
-
-Die MV darf hier nur `INSERT`. Bereinigt werden Veranstaltungen, deren Ende vor dem jüngsten `synced_at` liegt, spätestens 30 Tage nach Ende (ADR 0005): alle Anmeldungen der Veranstaltung werden gelöscht, `purged_at` wird gesetzt.
+Ein täglicher Cron löscht alle Anmeldungen von Veranstaltungen, deren Ende mehr als **30 Tage** zurückliegt, und setzt `purged_at` (ADR 0005). Keine eigene Tabelle, keine Bestätigung durch die MV.
 
 ### 3.6 Veranstalter – Taxonomie `dfk_unit`
 
@@ -215,7 +208,7 @@ Alle anderen Spalten (E-Mail, Status, Warteliste, Token, Zusatzwerte) bleiben f�
 | S2 | Zeiten nur in deutscher Ortszeit | Nur Deutschland; MV arbeitet ebenso |
 | S3 | Belegte Plätze per `COUNT`, kein Zähler | Geringe Datenmenge, keine Abweichungen möglich |
 | S4 | IDs der Anmeldungen starten bei 1.000.000 | Schadet nicht und schließt Kollisionen mit alten TEC-IDs in der MV sicher aus |
-| S5 | Bereinigung löscht alle Anmeldungen einer Veranstaltung, `purged_at` wird gesetzt | ADR 0005 |
+| S5 | Bereinigung **30 Tage nach Veranstaltungsende**: alle Anmeldungen der Veranstaltung werden gelöscht, `purged_at` wird gesetzt ✅ | ADR 0005, entschieden 18.11.2026 |
 
 ## 6. Bewusst weggelassen
 

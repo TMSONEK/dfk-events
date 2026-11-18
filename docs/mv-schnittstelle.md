@@ -1,6 +1,6 @@
 # Schnittstelle DFK Events ↔ DFK-Mitgliederverwaltung (MV)
 
-Stand: 17.11.2026 · Status: **Freigegeben (Captain, 17.11.2026)** – Variante A für V1, Sync-Bestätigung durch die MV
+Stand: 17.11.2026 · Status: **Freigegeben (Captain, 17.11.2026)** – Variante A für V1; Bereinigung nach 30 Tagen ohne Sync-Bestätigung (18.11.2026)
 
 Quelle der Analyse: Repository `DFK` (Access-Frontend „DFK Mitgliederverwaltung“, Backend SQL Server), Modul `modules/INet.bas` (`Termine_Import_V2`, `Termine_Anmeldungen_V2`), Tabellen `T_Termine`, `T_Termine_Anmeldungen`. Es wurden nur Quelltext und Schema gelesen, keine Daten.
 
@@ -69,8 +69,8 @@ Die MV darf ausgewählte Spalten der Anmeldungen direkt aktualisieren: Vor- und 
 ### Stornos und Löschung
 
 - Heute sieht die MV gelöschte Anmeldungen in WordPress nicht. Neu: Stornierte Teilnehmer bleiben bis zur Bereinigung mit **Status „storniert“** und neuem `updated_at` in der View, damit die MV sie nachziehen kann.
-- Nach der Bereinigung (ADR 0005) fehlen die Datensätze in der View. Die MV darf daraus **nicht** auf ein Storno schließen. Vorschlag: Bereinigung erst, wenn das Event vorbei ist **und** die MV synchronisiert hat (E-F27).
-- Übernahmebestätigung (E-F27): Die MV schreibt nach erfolgreichem Lauf einen Zeitstempel in eine kleine Tabelle `{prefix}dfk_mv_sync` (eigenes `INSERT`-Recht nur dafür). DFK Events bereinigt nur Events, deren Ende vor diesem Zeitstempel liegt. Die 30-Tage-Frist bleibt als Sicherheitsnetz.
+- Bereinigung fest **30 Tage nach Veranstaltungsende**, ohne Übernahmebestätigung (ADR 0005, geändert 18.11.2026). Die MV muss innerhalb dieser Frist abgleichen.
+- Nach der Bereinigung fehlen die Datensätze in der View. Die MV darf daraus **nicht** auf ein Storno schließen.
 
 ## 4. Beobachtungen im MV-Code (nicht Teil dieses Projekts, aber relevant)
 
