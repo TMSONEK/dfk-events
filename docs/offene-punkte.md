@@ -58,7 +58,8 @@ Stand: 18.11.2026 · Reihenfolge: Konzept fertigstellen → andere laufende Proj
 
 | # | Thema | Stand |
 |---|---|---|
-| O8 | Texte der drei automatischen Mails (Buchung bzw. Warteliste, Storno, Änderung) | Entwurf durch Coding Agent, Freigabe durch den Captain |
+| O8 | Texte der automatischen Mails | Reine Text-Templates; Entwurf in [mailtexte.md](mailtexte.md) – Freigabe offen |
+| O9 | Texte und Einstellungen in einer Tabelle, pflegbar über das CRM | Vorschlag [ADR 0010](adr/0010-texte-und-einstellungen-in-tabelle.md) – Freigabe offen |
 
 ## C. Für die MV-Seite (separates Projekt)
 

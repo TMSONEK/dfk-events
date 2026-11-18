@@ -136,6 +136,16 @@ Regeln (freigegeben 18.11.2026):
 
 Ein täglicher Cron löscht alle Anmeldungen von Veranstaltungen, deren Ende mehr als **30 Tage** zurückliegt, und setzt `purged_at` (ADR 0005). Keine eigene Tabelle, keine Bestätigung durch die MV.
 
+### 3.7 `wp_dfk_settings` – Texte und Einstellungen (ADR 0010, Vorschlag)
+
+| Spalte | Typ | Bemerkung |
+|---|---|---|
+| `setting_key` | VARCHAR(64) **PK** | z. B. `mail_booking_confirmed_body` |
+| `value` | TEXT NOT NULL | reiner Text |
+| `updated_at` | DATETIME NOT NULL | |
+
+Startwerte per Migration; Pflege über das CRM (`UPDATE` nur auf `value`).
+
 ### 3.6 Veranstalter – Taxonomie `dfk_unit`
 
 Jede Veranstaltung hat genau einen Veranstalter aus der MV-Liste `T_Veranstalter` (einmaliger CSV-Import, danach Pflege im WP-Admin).
