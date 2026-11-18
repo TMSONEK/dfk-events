@@ -1,6 +1,6 @@
 # ADR 0009 – Rückschreiben der MV in die Anmeldungen
 
-Datum: 18.11.2026 · Status: **Vorschlag, wartet auf Freigabe** (Anforderung Captain)
+Datum: 18.11.2026 · Status: **Angenommen** (Captain, 18.11.2026) – Option A
 
 ## Kontext
 

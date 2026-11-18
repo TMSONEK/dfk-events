@@ -113,7 +113,7 @@ dfk-events/
 │   │
 │   ├── Service/                   Geschäftslogik
 │   │   ├── EventService.php           Anlegen, Ändern, Übersicht/Filter, Regel „online → DFK“
-│   │   ├── BookingService.php         Buchen, Stornieren, Ändern, Nachrücken; Kapazität, Warteliste, Token
+│   │   ├── BookingService.php         Buchen, Stornieren, Ändern, Nachrücken; Kapazität, Warteliste
 │   │   ├── FormService.php            Zusatzfelder validieren, sensible Werte verschlüsseln
 │   │   ├── NotificationService.php    Mails bei Buchung, Storno, Änderung (ADR 0008)
 │   │   ├── GeoService.php             Geocoding beim Speichern, Luftlinie, Umkreis
@@ -127,7 +127,8 @@ dfk-events/
 │   │   ├── Frontend/
 │   │   │   ├── EventListController.php      Übersicht
 │   │   │   ├── EventDetailController.php    Detailseite /event/<slug>/
-│   │   │   └── BookingController.php        Formular, Verwaltungslink, Spamschutz
+│   │   │   ├── BookingController.php        Formular, Spamschutz
+│   │   │   └── Shortcodes.php               [dfk_events], [dfk_event_details], [dfk_event_booking] für Elementor
 │   │   ├── Admin/
 │   │   │   ├── EventEditController.php      Metabox: Termin, Ort, Kapazität, Regeln, Zusatzfelder
 │   │   │   ├── VenueController.php          Orte verwalten, Koordinaten prüfen/korrigieren

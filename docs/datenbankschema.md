@@ -1,6 +1,6 @@
 # DFK Events – Datenbankschema (Entwurf)
 
-Stand: 18.11.2026 · Status: **Freigegeben (Captain, 18.11.2026)** – ausgenommen die drei `mv_*`-Spalten aus ADR 0009, die noch auf Freigabe warten
+Stand: 18.11.2026 · Status: **Freigegeben (Captain, 18.11.2026)** inkl. ADR 0009
 
 Grundlage: [architektur.md](architektur.md), ADR 0001–0008, [mv-schnittstelle.md](mv-schnittstelle.md).
 
@@ -94,13 +94,14 @@ Orte werden wiederverwendet; die Koordinaten liegen damit an genau einer Stelle.
 | `status` | VARCHAR(20) NOT NULL DEFAULT 'active' | `active`, `cancelled`, `not_attending` (Anmelder kommt selbst nicht) |
 | `waitlist` | TINYINT(1) NOT NULL DEFAULT 0 | **Wartelisten-Flag** (ADR 0008) |
 | `extra_values` | JSON NULL | Werte der Zusatzfelder; sensible Werte verschlüsselt |
-| `token_hash` | CHAR(64) NULL | Verwaltungslink, nur in der Anmelderzeile |
 | `mv_member_no` | INT UNSIGNED NULL | **von der MV geschrieben**: zugeordnete Mitgliedsnummer (ADR 0009) |
 | `mv_status` | VARCHAR(30) NULL | **von der MV geschrieben**: geprüfter Status, z. B. `Mitglied`, `Interessent` |
 | `mv_updated_at` | DATETIME NULL | **von der MV geschrieben**: Zeitpunkt der letzten Rückmeldung |
 | `created_at`, `updated_at` | DATETIME NOT NULL | `created_at` = Reihenfolge der Warteliste |
 
-Indizes: `(event_id, status, waitlist)`, `(booking_id)`, `(event_id, email)`, `(updated_at)`, `UNIQUE (token_hash)`.
+Indizes: `(event_id, status, waitlist)`, `(booking_id)`, `(event_id, email)`, `(updated_at)`.
+
+Kein Verwaltungslink in V1: Stornos laufen über den Mitgliederservice (offene-punkte.md A3). Ein Token-Feld kann bei Bedarf per Migration ergänzt werden.
 
 `attendee_type` bleibt die Selbstauskunft aus dem Formular; `mv_status` ist der von der MV geprüfte Status. Beide stehen nebeneinander, nichts wird überschrieben.
 

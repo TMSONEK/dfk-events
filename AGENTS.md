@@ -158,7 +158,7 @@ Die anmeldende Person und die tatsächlichen Teilnehmer sind unterschiedliche En
 - Mehrfachanmeldungen können pro Veranstaltung aktiviert oder deaktiviert werden.
 - Maximale Teilnehmerzahl je Buchung ist konfigurierbar.
 - Jeder Teilnehmer besitzt eine eindeutige ID und einen eigenen Status.
-- Einzelne Teilnehmer können storniert werden.
+- Einzelne Teilnehmer können storniert werden – in V1 nur durch den Mitgliederservice, keine Selbst-Stornierung.
 - Kapazitäten werden anhand der Teilnehmer und nicht anhand der Buchungen berechnet.
 - Gleichzeitige Buchungen dürfen keine Überbuchungen verursachen.
 
@@ -261,7 +261,9 @@ Das Plugin muss mit der bestehenden DFK-Umgebung zusammenarbeiten:
 
 Das Plugin darf für seine Kernfunktionen nicht von Elementor abhängig sein.
 
-Die Darstellung soll über eigene Templates und geeignete WordPress-Integrationspunkte erfolgen.
+Die Darstellung erfolgt über eigene Templates. Zusätzlich muss die Gestaltung mit Elementor möglich sein (Shortcodes für Übersicht, Details und Anmeldeformular; Elementor-Vorlagen haben Vorrang vor Plugin-Templates). Das bisherige Erscheinungsbild der Übersicht soll möglichst erhalten bleiben.
+
+Nur WordPress-Administratoren legen Veranstaltungen an und sehen Anmeldungen.
 
 Bestehende WordPress-Benutzerkonten sollen für authentifizierte Mitglieder verwendet werden.
 
@@ -342,8 +344,7 @@ Freigegeben:
 - REST: nur ein öffentlicher, lesender Endpunkt für die App (`docs/app-anbindung.md`), keine Schreib-API
 
 Noch nicht freigegeben:
-- ADR 0009 (Rückschreiben der MV)
-- Restliche Konzeptpunkte: `docs/offene-punkte.md`
+- Restliche Konzeptpunkte O1–O4: `docs/offene-punkte.md`
 - Implementierung: **Kein Anwendungscode, bis das Konzept abgeschlossen ist** (Captain, 18.11.2026). Danach Umsetzung, Testumgebung Staging bei Mittwald, PHP 8.1.
 
 Eine Migration der bisherigen Veranstaltungen findet nicht statt (ADR 0006).
