@@ -1,6 +1,6 @@
 # DFK Events – Datenbankschema (Entwurf)
 
-Stand: 18.11.2026 · Status: **Entwurf, wartet auf Freigabe durch den Captain**
+Stand: 18.11.2026 · Status: **Freigegeben (Captain, 18.11.2026)** – ausgenommen die drei `mv_*`-Spalten aus ADR 0009, die noch auf Freigabe warten
 
 Grundlage: [architektur.md](architektur.md), ADR 0001–0008, [mv-schnittstelle.md](mv-schnittstelle.md).
 
@@ -217,7 +217,7 @@ Alle anderen Spalten (E-Mail, Status, Warteliste, Token, Zusatzwerte) bleiben f�
 
 Sensible Felder sind in dieser View nicht enthalten.
 
-## 5. Schema-Entscheidungen zur Freigabe
+## 5. Schema-Entscheidungen (S1–S5 freigegeben 18.11.2026)
 
 | ID | Entscheidung | Begründung |
 |---|---|---|

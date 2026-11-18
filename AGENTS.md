@@ -337,10 +337,13 @@ Keine eigenmächtigen Pushes, Deployments oder Datenbankänderungen ohne Freigab
 
 Entscheidungen sind in `docs/architektur.md` (Abschnitt 0) und `docs/adr/` dokumentiert.
 
+Freigegeben:
+- Datenbankschema `docs/datenbankschema.md` (18.11.2026; die `mv_*`-Spalten aus ADR 0009 noch offen)
+- REST: nur ein öffentlicher, lesender Endpunkt für die App (`docs/app-anbindung.md`), keine Schreib-API
+
 Noch nicht freigegeben:
-- Datenbankschema (Entwurf: `docs/datenbankschema.md`)
-- Vollständige API-Spezifikation
-- Implementierung der Geschäftslogik
+- ADR 0009 (Rückschreiben der MV)
+- Implementierung der Geschäftslogik (Umsetzungsplan folgt)
 
 Eine Migration der bisherigen Veranstaltungen findet nicht statt (ADR 0006).
 
